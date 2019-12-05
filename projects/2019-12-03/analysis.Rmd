@@ -1,0 +1,59 @@
+---
+title: "#TidyTuesday 2019-12-03"
+author: "Francis Lin"
+output: html_notebook
+---
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(lubridate)
+
+# set data path
+data_path <- set_data_path()
+```
+
+
+```{r load data}
+# read in data
+tickets <- read.csv(paste(data_path, "tickets.csv", sep=""))
+```
+
+
+```{r manipulate data}
+# count number of tickets by weekday
+count_by_weekday <-
+    tickets %>%
+    select(issue_datetime) %>%
+    mutate(weekday = wday(issue_datetime, label=TRUE)) %>%
+    count(weekday) %>%
+    group_by(weekday)
+```
+
+
+```{r plot}
+# plot number of tickets by weekday
+count_by_weekday %>%
+    ggplot() +
+    aes(x = weekday, y = n, color = weekday, fill = weekday) +
+    geom_bar(stat = "identity") + 
+    labs(x = "Days of week", y = "Number of tickets") + 
+    ggtitle("Number of Tickets by Weekday") +
+    theme(legend.position = "none")
+```
+
+
+```{r save plot}
+# save image
+ggsave("plot/plot_2019-12-03.png", width = 29, height = 21, units = "cm", dpi = "retina")
+```
+
+
+```{r session info}
+#session info
+sessionInfo()
+```
+
