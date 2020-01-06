@@ -1,0 +1,47 @@
+---
+title: "#TidyTuesday 2019-12-10"
+author: "Francis Lin"
+output: html_notebook
+---
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(lubridate)
+library(gganimate)
+
+# set data path
+data_path <- set_data_path()
+```
+
+
+```{r load data}
+# read in data
+diseases <- read.csv(paste(data_path, "diseases.csv", sep=""))
+```
+
+
+```{r plot}
+# plot number of tickets by weekday
+
+disease <- "Smallpox"
+
+data <- diseases %>%
+    filter(disease == disease) %>%
+    mutate(rate = count / population * 10000 * 52 / weeks_reporting)
+
+p <- ggplot(data) +
+    aes(x = state, y = rate) +
+    geom_bar(stat = "identity") +
+    coord_flip() + 
+    transition_time(year) +
+    labs(title = "Measles Rate by State, Year: {frame_time}")
+
+animation <- animate(p, fps=5, end_pause=10)
+animation
+```
+
+
