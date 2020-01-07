@@ -75,6 +75,13 @@ p <- ggplot(data=max_temp_annual, aes(x=year, y=annual_temp_diff, fill=factor(if
 p
 ```
 
+Save Image
+
+```{r save plot}
+# save image
+ggsave("plot/plot_2020-01-07.png", width = 29, height = 21, units = "cm", dpi = "retina")
+```
+
 Session Info
 
 ```{r session info}
