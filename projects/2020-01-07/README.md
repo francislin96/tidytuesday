@@ -1,8 +1,43 @@
-\#TidyTuesday 2020-01-10
+Australian Fires
 ================
-Francis Lin
+Francis Lin | \#TidyTuesday |
+2020-01-10
 
-Set up
+# Introduction
+
+As of the time I am writing this analysis, Australians are being
+devastated by one of the [worst wildfires in Australian
+history](https://en.wikipedia.org/wiki/2019%E2%80%9320_Australian_bushfire_season).
+More than 20 people have lost their lives, and by [one
+estimate](https://sydney.edu.au/news-opinion/news/2020/01/03/a-statement-about-the-480-million-animals-killed-in-nsw-bushfire.html),
+roughly half a billion animals have already perished as millions and
+millions of acres burn. Here are some of the heartbreaking photos taken
+of the
+tragedy:
+
+![](https://static.boredpanda.com/blog/wp-content/uploads/2020/01/5e12de5196b2b_0z50n8fbir841__700.jpg)
+
+![](https://media3.s-nbcnews.com/j/newscms/2020_02/3172851/200106-australia-wildfire-se-1115a_b1ff1a8528b60b2404e60607fc74a0dd.fit-2000w.jpg)
+
+![](https://cdn.theatlantic.com/assets/media/img/photo/2020/01/australia-fires-tk/a23_RTS2XBRD/main_900.jpg)
+
+![](https://cdn.theatlantic.com/assets/media/img/photo/2020/01/australia-fires-tk/a01_RTS2X3HZ/main_900.jpg)
+
+Please consider donating to the [Australian Red
+Cross](https://www.redcross.org.au/news-and-media/news/your-donations-in-action)
+to help support the firefighters, volunteers, and climate refugees.
+
+This week’s dataset, from the [Australian Bureau of Meterology
+(BoM)](http://www.bom.gov.au/?ref=logo), will focus on this catastrophe.
+The data includes the maximum and minimum temperatures recorded at
+various locations in Australia from 1910 to 2019. Using inspiration from
+this [NYT
+article](https://www.nytimes.com/interactive/2020/01/02/climate/australia-fires-map.html),
+I will aim to visualize why this season’s fires have been so bad.
+
+# R Program
+
+## Set up
 
 ``` r
 # source utilities
@@ -16,14 +51,18 @@ library(readr)
 data_path <- set_data_path()
 ```
 
-Load Data
+## Load Data
 
 ``` r
 # read in data
 temperature <- read_csv(paste0(data_path, "temperature.csv"), col_types=cols(date = col_date(format="%Y-%m-%d")))
 ```
 
-Manipulate Data
+## Manipulate Data
+
+First, I found the average temperature recorded on each day across the
+different locations in Australia. I then took those measurements and
+grouped by year to find the average annual temperature.
 
 ``` r
 # find average temperature for each day
@@ -42,7 +81,10 @@ max_temp_annual <- max_temp_date %>%
 max_temp_annual$annual_temp_diff <- max_temp_annual$annual_temp - mean(max_temp_annual[which(max_temp_annual$year %in% c(1960, 1961)),]$annual_temp)
 ```
 
-Plot
+## Plot
+
+Using annotations, I was able to highlight and draw attention to the
+year 2019.
 
 ``` r
 # plot
@@ -75,14 +117,21 @@ p
 
 ![](README_files/figure-gfm/plot-1.png)<!-- -->
 
-Save Image
+It’s clear that 2019 has been the hottest year on record. No wonder the
+fires have been so bad.
+
+One thing that I did notice is that the axes on graphic in the NYT
+article is not as drastic as mine. If anybody knows how our
+methodologies differed, please let me know\!
+
+## Save Image
 
 ``` r
 # save image
 ggsave("plot/plot_2020-01-07.png", width = 29, height = 21, units = "cm", dpi = "retina")
 ```
 
-Session Info
+## Session Info
 
 ``` r
 #session info
@@ -114,14 +163,14 @@ sessionInfo()
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] Rcpp_1.0.1       cellranger_1.1.0 pillar_1.3.1     compiler_3.5.3  
-    ##  [5] tools_3.5.3      digest_0.6.18    zeallot_0.1.0    packrat_0.5.0   
-    ##  [9] evaluate_0.13    lubridate_1.7.4  jsonlite_1.6     nlme_3.1-137    
+    ##  [5] tools_3.5.3      zeallot_0.1.0    digest_0.6.18    packrat_0.5.0   
+    ##  [9] lubridate_1.7.4  jsonlite_1.6     evaluate_0.13    nlme_3.1-137    
     ## [13] gtable_0.3.0     lattice_0.20-38  pkgconfig_2.0.2  rlang_0.4.0     
     ## [17] cli_1.1.0        rstudioapi_0.10  yaml_2.2.0       parallel_3.5.3  
     ## [21] haven_2.1.1      xfun_0.6         withr_2.1.2      xml2_1.2.0      
-    ## [25] httr_1.4.0       knitr_1.22       generics_0.0.2   vctrs_0.2.0     
-    ## [29] hms_0.5.0        grid_3.5.3       tidyselect_0.2.5 glue_1.3.1      
+    ## [25] httr_1.4.0       knitr_1.22       vctrs_0.2.0      hms_0.5.0       
+    ## [29] generics_0.0.2   grid_3.5.3       tidyselect_0.2.5 glue_1.3.1      
     ## [33] R6_2.4.0         readxl_1.3.1     rmarkdown_1.13   modelr_0.1.4    
-    ## [37] magrittr_1.5     htmltools_0.3.6  backports_1.1.4  scales_1.0.0    
+    ## [37] magrittr_1.5     backports_1.1.4  scales_1.0.0     htmltools_0.3.6 
     ## [41] rvest_0.3.3      assertthat_0.2.1 colorspace_1.4-1 stringi_1.4.3   
     ## [45] lazyeval_0.2.2   munsell_0.5.0    broom_0.5.2      crayon_1.3.4
