@@ -33,7 +33,7 @@ data_path <- set_data_path()
 diseases <- read.csv(paste0(data_path, "diseases.csv"))
 ```
 
-# Plot
+## Plot
 
 ```{r plot}
 # plot number of tickets by weekday
@@ -55,9 +55,16 @@ animation <- animate(p, fps=5, end_pause=10)
 animation
 ```
 
-# Save Plot
+## Save Plot
 
 ```{r save image}
 anim_save("plot/plot_2019-12-10.gif", animation)
+```
+
+## Session Info
+
+```{r session info}
+#session info
+sessionInfo()
 ```
 
