@@ -1,8 +1,17 @@
 ---
-title: "#TidyTuesday 2019-12-10"
-author: "Francis Lin"
+title: "Infectious Diseases"
+author: "Francis Lin | #TidyTuesday |"
+date: "2019-12-10"
 output: rmarkdown::github_document
 ---
+
+# Introduction
+
+This dataset, originally from [Project Tycho](https://www.tycho.pitt.edu/), contains the number of people infected by a number of diseases in each state. Since I heard R could do animations pretty well using gganimate, I wanted to animate how the rate of infection changed for a certain disease over time.
+
+# R Program
+
+## Set up
 
 ```{r setup, message=FALSE}
 # source utilities
@@ -17,12 +26,14 @@ library(gganimate)
 data_path <- set_data_path()
 ```
 
+## Load Data
 
 ```{r load data}
 # read in data
-diseases <- read.csv(paste(data_path, "diseases.csv", sep=""))
+diseases <- read.csv(paste0(data_path, "diseases.csv"))
 ```
 
+# Plot
 
 ```{r plot}
 # plot number of tickets by weekday
@@ -43,6 +54,8 @@ p <- ggplot(data) +
 animation <- animate(p, fps=5, end_pause=10)
 animation
 ```
+
+# Save Plot
 
 ```{r save image}
 anim_save("plot/plot_2019-12-10.gif", animation)

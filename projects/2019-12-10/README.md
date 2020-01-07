@@ -1,6 +1,19 @@
-\#TidyTuesday 2019-12-10
+Infectious Diseases
 ================
-Francis Lin
+Francis Lin | \#TidyTuesday |
+2019-12-10
+
+# Introduction
+
+This dataset, originally from [Project
+Tycho](https://www.tycho.pitt.edu/), contains the number of people
+infected by a number of diseases in each state. Since I heard R could do
+animations pretty well using gganimate, I wanted to animate how the rate
+of infection changed for a certain disease over time.
+
+# R Program
+
+## Set up
 
 ``` r
 # source utilities
@@ -15,10 +28,14 @@ library(gganimate)
 data_path <- set_data_path()
 ```
 
+## Load Data
+
 ``` r
 # read in data
-diseases <- read.csv(paste(data_path, "diseases.csv", sep=""))
+diseases <- read.csv(paste0(data_path, "diseases.csv"))
 ```
+
+# Plot
 
 ``` r
 # plot number of tickets by weekday
@@ -47,20 +64,23 @@ Rendering [>---------------------------------------] at 12 fps ~ eta:  7s
 Rendering [=>--------------------------------------] at 12 fps ~ eta:  7s
 Rendering [==>-------------------------------------] at 12 fps ~ eta:  7s
 Rendering [===>------------------------------------] at 12 fps ~ eta:  7s
-Rendering [===>------------------------------------] at 11 fps ~ eta:  7s
-Rendering [====>-----------------------------------] at 11 fps ~ eta:  7s
-Rendering [=====>----------------------------------] at 11 fps ~ eta:  7s
-Rendering [======>---------------------------------] at 11 fps ~ eta:  7s
-Rendering [=======>--------------------------------] at 11 fps ~ eta:  6s
-Rendering [========>-------------------------------] at 11 fps ~ eta:  6s
-Rendering [=========>------------------------------] at 11 fps ~ eta:  6s
-Rendering [==========>-----------------------------] at 11 fps ~ eta:  6s
-Rendering [===========>----------------------------] at 11 fps ~ eta:  6s
-Rendering [============>---------------------------] at 11 fps ~ eta:  5s
-Rendering [=============>--------------------------] at 11 fps ~ eta:  5s
-Rendering [==============>-------------------------] at 11 fps ~ eta:  5s
+Rendering [====>-----------------------------------] at 12 fps ~ eta:  7s
+Rendering [=====>----------------------------------] at 12 fps ~ eta:  7s
+Rendering [======>---------------------------------] at 12 fps ~ eta:  6s
+Rendering [=======>--------------------------------] at 12 fps ~ eta:  6s
+Rendering [========>-------------------------------] at 12 fps ~ eta:  6s
+Rendering [=========>------------------------------] at 12 fps ~ eta:  6s
+Rendering [==========>-----------------------------] at 12 fps ~ eta:  6s
+Rendering [===========>----------------------------] at 12 fps ~ eta:  6s
+Rendering [===========>----------------------------] at 12 fps ~ eta:  5s
+Rendering [============>---------------------------] at 12 fps ~ eta:  5s
+Rendering [=============>--------------------------] at 12 fps ~ eta:  5s
+Rendering [==============>-------------------------] at 12 fps ~ eta:  5s
+Rendering [===============>------------------------] at 11 fps ~ eta:  5s
+Rendering [===============>------------------------] at 12 fps ~ eta:  5s
 Rendering [===============>------------------------] at 11 fps ~ eta:  5s
 Rendering [================>-----------------------] at 11 fps ~ eta:  5s
+Rendering [================>-----------------------] at 11 fps ~ eta:  4s
 Rendering [=================>----------------------] at 11 fps ~ eta:  4s
 Rendering [==================>---------------------] at 11 fps ~ eta:  4s
 Rendering [===================>--------------------] at 11 fps ~ eta:  4s
@@ -196,6 +216,8 @@ animation
 ```
 
 ![](README_files/figure-gfm/plot-1.gif)<!-- -->
+
+# Save Plot
 
 ``` r
 anim_save("plot/plot_2019-12-10.gif", animation)
