@@ -4,6 +4,8 @@ author: "Francis Lin"
 output: rmarkdown::github_document
 ---
 
+Set up
+
 ```{r setup, message=FALSE}
 # source utilities
 source("../utilities.R")
@@ -16,12 +18,14 @@ library(readr)
 data_path <- set_data_path()
 ```
 
+Load Data
 
 ```{r load data}
 # read in data
 temperature <- read_csv(paste0(data_path, "temperature.csv"), col_types=cols(date = col_date(format="%Y-%m-%d")))
 ```
 
+Manipulate Data
 
 ```{r manipulate data}
 # find average temperature for each day
@@ -40,6 +44,7 @@ max_temp_annual <- max_temp_date %>%
 max_temp_annual$annual_temp_diff <- max_temp_annual$annual_temp - mean(max_temp_annual[which(max_temp_annual$year %in% c(1960, 1961)),]$annual_temp)
 ```
 
+Plot
 
 ```{r plot}
 # plot
@@ -70,14 +75,10 @@ p <- ggplot(data=max_temp_annual, aes(x=year, y=annual_temp_diff, fill=factor(if
 p
 ```
 
-
-```{r save plot}
-# save image
-ggsave("plot/plot_2020-01-07.png", p, height=7, width=10)
-```
-
+Session Info
 
 ```{r session info}
 #session info
 sessionInfo()
 ```
+

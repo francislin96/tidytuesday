@@ -5,3 +5,6 @@ set_data_path <- function() {
     return(paste("../../tidytuesday/data/", year_string, "/", date_string, "/", sep=""))
 }
 
+convert_to_readme <- function (filename) {
+    rmarkdown::render(input=filename, output_format="github_document", output_file="README.md")
+}

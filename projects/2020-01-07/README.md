@@ -2,6 +2,8 @@
 ================
 Francis Lin
 
+Set up
+
 ``` r
 # source utilities
 source("../utilities.R")
@@ -14,10 +16,14 @@ library(readr)
 data_path <- set_data_path()
 ```
 
+Load Data
+
 ``` r
 # read in data
 temperature <- read_csv(paste0(data_path, "temperature.csv"), col_types=cols(date = col_date(format="%Y-%m-%d")))
 ```
+
+Manipulate Data
 
 ``` r
 # find average temperature for each day
@@ -35,6 +41,8 @@ max_temp_annual <- max_temp_date %>%
 # find difference of each year from average
 max_temp_annual$annual_temp_diff <- max_temp_annual$annual_temp - mean(max_temp_annual[which(max_temp_annual$year %in% c(1960, 1961)),]$annual_temp)
 ```
+
+Plot
 
 ``` r
 # plot
@@ -65,12 +73,9 @@ p <- ggplot(data=max_temp_annual, aes(x=year, y=annual_temp_diff, fill=factor(if
 p
 ```
 
-![](analysis_files/figure-gfm/plot-1.png)<!-- -->
+![](README_files/figure-gfm/plot-1.png)<!-- -->
 
-``` r
-# save image
-ggsave("plot/plot_2020-01-07.png", p, height=7, width=10)
-```
+Session Info
 
 ``` r
 #session info
@@ -102,14 +107,15 @@ sessionInfo()
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] Rcpp_1.0.1       cellranger_1.1.0 pillar_1.3.1     compiler_3.5.3  
-    ##  [5] tools_3.5.3      zeallot_0.1.0    digest_0.6.18    lubridate_1.7.4 
-    ##  [9] jsonlite_1.6     evaluate_0.13    nlme_3.1-137     gtable_0.3.0    
-    ## [13] lattice_0.20-38  pkgconfig_2.0.2  rlang_0.4.0      cli_1.1.0       
-    ## [17] rstudioapi_0.10  yaml_2.2.0       parallel_3.5.3   haven_2.1.1     
-    ## [21] xfun_0.6         withr_2.1.2      xml2_1.2.0       httr_1.4.0      
-    ## [25] knitr_1.22       vctrs_0.2.0      hms_0.5.0        generics_0.0.2  
-    ## [29] grid_3.5.3       tidyselect_0.2.5 glue_1.3.1       R6_2.4.0        
-    ## [33] readxl_1.3.1     rmarkdown_1.13   modelr_0.1.4     magrittr_1.5    
-    ## [37] backports_1.1.4  scales_1.0.0     htmltools_0.3.6  rvest_0.3.3     
-    ## [41] assertthat_0.2.1 colorspace_1.4-1 stringi_1.4.3    lazyeval_0.2.2  
-    ## [45] munsell_0.5.0    broom_0.5.2      crayon_1.3.4
+    ##  [5] base64enc_0.1-3  tools_3.5.3      digest_0.6.18    zeallot_0.1.0   
+    ##  [9] packrat_0.5.0    evaluate_0.13    lubridate_1.7.4  jsonlite_1.6    
+    ## [13] nlme_3.1-137     gtable_0.3.0     lattice_0.20-38  pkgconfig_2.0.2 
+    ## [17] rlang_0.4.0      cli_1.1.0        rstudioapi_0.10  yaml_2.2.0      
+    ## [21] parallel_3.5.3   haven_2.1.1      xfun_0.6         withr_2.1.2     
+    ## [25] xml2_1.2.0       httr_1.4.0       knitr_1.22       generics_0.0.2  
+    ## [29] vctrs_0.2.0      hms_0.5.0        grid_3.5.3       tidyselect_0.2.5
+    ## [33] glue_1.3.1       R6_2.4.0         readxl_1.3.1     rmarkdown_1.13  
+    ## [37] modelr_0.1.4     magrittr_1.5     htmltools_0.3.6  backports_1.1.4 
+    ## [41] scales_1.0.0     rsconnect_0.8.13 rvest_0.3.3      assertthat_0.2.1
+    ## [45] colorspace_1.4-1 stringi_1.4.3    lazyeval_0.2.2   munsell_0.5.0   
+    ## [49] broom_0.5.2      crayon_1.3.4
