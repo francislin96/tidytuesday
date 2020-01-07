@@ -1,8 +1,17 @@
 ---
-title: "#TidyTuesday 2019-12-03"
-author: "Francis Lin"
+title: "Philadelphia Parking Violations"
+author: "Francis Lin | #TidyTuesday |"
+date: "2019-12-03"
 output: rmarkdown::github_document
 ---
+
+# Introduction
+
+Welcome to my first [#TidyTuesday](https://github.com/rfordatascience/tidytuesday)! This week, I'll be looking at a sample of parking violations in Philadelphia. The full dataset is available at [Open Data Philly](https://www.opendataphilly.org/dataset/parking-violations).
+
+# R Program
+
+## Set up
 
 ```{r setup, message=FALSE}
 # source utilities
@@ -16,12 +25,16 @@ library(lubridate)
 data_path <- set_data_path()
 ```
 
+## Load Data
 
 ```{r load data}
 # read in data
 tickets <- read.csv(paste(data_path, "tickets.csv", sep=""))
 ```
 
+## Manipulate Data
+
+I wanted to find the number of tickets issued by weekday. Using the pipe operator, I was able to parse the date column to obtain the weekday. I then grouped the data by weekday and counted the number of observations per group. My hypothesis is that there would be more tickets issued during weekdays than weekends.
 
 ```{r manipulate data}
 # count number of tickets by weekday
@@ -33,6 +46,7 @@ count_by_weekday <-
     group_by(weekday)
 ```
 
+## Plot
 
 ```{r plot}
 # plot number of tickets by weekday
@@ -45,12 +59,16 @@ count_by_weekday %>%
     theme(legend.position = "none")
 ```
 
+It turns out my hypothesis was correct. However, I was surprised by how much greater the number of tickets were issued on weekdays versus weekends. Specifically, 3x fewer tickets were issued on Sunday than any other day! 
+
+## Save Plot
 
 ```{r save plot}
 # save image
 ggsave("plot/plot_2019-12-03.png", width = 29, height = 21, units = "cm", dpi = "retina")
 ```
 
+## Session Info
 
 ```{r session info}
 #session info
