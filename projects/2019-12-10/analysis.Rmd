@@ -1,7 +1,7 @@
 ---
 title: "#TidyTuesday 2019-12-10"
 author: "Francis Lin"
-output: html_notebook
+output: rmarkdown::github_document
 ---
 
 ```{r setup, message=FALSE}
@@ -44,4 +44,7 @@ animation <- animate(p, fps=5, end_pause=10)
 animation
 ```
 
+```{r save image}
+anim_save("plot/plot_2019-12-10.gif", animation)
+```
 
