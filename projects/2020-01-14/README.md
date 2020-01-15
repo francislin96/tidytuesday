@@ -32,11 +32,9 @@ library(readr)
 # set data path
 data_path <- set_data_path()
 
-# create plot folder
-ifelse(!dir.exists("./plot"), dir.create("./plot"), FALSE)
+# create plot folder if doesn't exist
+if(!dir.exists("./plot")) {dir.create("./plot")}
 ```
-
-    ## [1] FALSE
 
 ## Load Data
 
