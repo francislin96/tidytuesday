@@ -33,7 +33,7 @@ library(readr)
 data_path <- set_data_path()
 
 # create plot folder if doesn't exist
-if(!dir.exists("./plot")) {dir.create("./plot")}
+if (!dir.exists("./plot")) {dir.create("./plot")}
 ```
 
 ## Load Data
@@ -73,7 +73,7 @@ p <- ggplot(passwords, aes(as.numeric(row.names(passwords)), desc(rank), label=p
 ## Save Image
 
 ``` r
-ggsave("plot/plot_2020-01-14.png", p, width=12, height=8, units ="in")
+ggsave("plot/plot_2020-01-14.png", p, width=12, height=8, units="in")
 ```
 
 ![](./plot/plot_2020-01-14.png)
