@@ -1,0 +1,86 @@
+---
+title: "Passwords"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-01-14"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+The top 500 common passwords and their relative strengths were provided by [Information is Beautiful](https://docs.google.com/spreadsheets/d/1cz7TDhm0ebVpySqbTvrHrD3WpxeyE4hLZtifWSnoNTQ/edit#gid=21). Besides the usual bad "password" and "123456" passwords, other interesting passwords have made their way into the top 500.
+
+* #149: "ncc1701" - the ship number for the Starship Enterprise
+* #187: "thx1138" - the name of George Lucas’s first movie
+* #336: "rush2112" - fourth studio album by Canadian rock band Rush
+
+If you find your password in the list, make sure to change it, fast!
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(readr)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder
+ifelse(!dir.exists("./plot"), dir.create("./plot"), FALSE)
+```
+
+## Load Data
+
+```{r load data, message=FALSE}
+# read in data
+passwords <- read_csv(paste0(data_path, "passwords.csv"), n_max=500)
+
+# arrange by password
+passwords <- passwords%>%arrange(password)
+```
+
+## Plot data
+
+```{r plot data}
+# plot 
+# order x alphanumerically, y by popularity
+# color by category
+# size by strength
+p <- ggplot(passwords, aes(as.numeric(row.names(passwords)), desc(rank), label=password, color=category)) +
+    geom_text(aes(size=(font_size+1)^2), position=position_jitter(width=20,height=10), family="NimbusRom") + 
+    
+    # no ticks, axes arrow, title font size
+    guides(size=FALSE) +
+    theme(axis.ticks=element_blank(), axis.text=element_blank(), axis.line = element_line(arrow=arrow(angle=10, length=unit(0.1, "inches"), type = "open")), plot.title=element_text(size=20, hjust = 0.5)) + 
+    
+    # labels
+    labs(title="Security of Popular Passwords",
+         x="Alphanumeric Order",
+         y="Popularity",
+         caption="* Size of text is proportional to password strength") +
+    
+    # size
+    coord_cartesian(xlim=c(-10, 510), ylim=c(-500, 10), clip="off")
+```
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-01-14.png", p, width=12, height=8, units ="in")
+```
+
+
+![](./plot/plot_2020-01-14.png)
+
+## Session Info
+
+```{r session info}
+#session info
+sessionInfo()
+```
+
