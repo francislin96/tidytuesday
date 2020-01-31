@@ -1,0 +1,110 @@
+---
+title: "San Francisco Trees"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-01-28"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+This week's #TidyTuesday is about trees in San Francisco! While there was a lot of information provided here, I wanted to take my very first crack at plotting geospatial data. The dataset actually reminded me of a [Hack for LA Public Tree Map project](https://public-tree-map.surge.sh/). Perhaps it would be a good exercise someday to see if I can replicate a similar app using something like Shiny.
+
+Coincidentally, I was also in rstudio::conf at San Francisco this weekend and met [Thomas Mock](https://thomasmock.netlify.com/), the creator of TidyTuesdays! I didn't, however, have time to really appreciate the trees there..
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(lubridate)
+library(ggmap)
+library(grDevices)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+## Load Data
+
+```{r load data, message=FALSE}
+# read in data
+sf_trees <- read_csv(paste0(data_path, "Street_Tree_Map.csv"),
+    col_types = 
+        cols(
+            TreeID = col_double(),
+            qLegalStatus = col_character(),
+            qSpecies = col_character(),
+            qAddress = col_character(),
+            SiteOrder = col_double(),
+            qSiteInfo = col_character(),
+            PlantType = col_character(),
+            qCaretaker = col_character(),
+            qCareAssistant = col_character(),
+            PlantDate = col_character(),
+            DBH = col_double(),
+            PlotSize = col_character(),
+            PermitNotes = col_character(),
+            XCoord = col_double(),
+            YCoord = col_double(),
+            Latitude = col_double(),
+            Longitude = col_double(),
+            Location = col_character()))
+```
+
+## Create Map
+
+```{r create map, message=FALSE}
+# read in google maps API key
+register_google(key=read_key("google"))
+
+# create ggmap
+sf_map <- get_map(location = c(-122.4194, 37.7749), maptype = "roadmap", zoom=12)
+tree_map <- ggmap(sf_map)
+```
+
+## Manipulate Data
+
+```{r manipulate data}
+# filter out trees without long/lat or out of range
+sf_trees_filtered <- sf_trees %>% 
+    drop_na(Longitude, Latitude) %>%
+    filter(between(Longitude, min(tree_map$data$lon), max(tree_map$data$lon)), between(Latitude, min(tree_map$data$lat), max(tree_map$data$lat))) %>%
+    select(Longitude, Latitude)
+```
+
+## Plot Density
+
+```{r plot}
+# plot density as contour map
+p <- tree_map + 
+    stat_density2d(data=sf_trees_filtered, aes(x=Longitude, y=Latitude, fill=..level..), bins=5, alpha=0.4, geom="polygon") +
+    scale_fill_gradientn(colours=colorRampPalette(c("lightgreen", "darkgreen"))(255)) + 
+    theme(legend.position="none") + 
+    labs(x="", y="", title="Density of Trees in San Francisco")
+p
+```
+
+From this plot, the areas around Filmore District have the highest tree density. The tree density decreases as you move away from the center of the city. I was surprised to see absolutely no trees in the Golden Gate Park area, which is full of trees in real life. Perhaps there were too many trees in the Golden Gate Park and they decided to exclude it. Also, the dataset had dropped a few rows where > 75% of the columns were missing or redundant, which could have filtered out the Golden Gate Park trees. 
+
+I heard that the `sf` package is also quite good for geospatial data so I should try that next time.
+
+## Save Image
+
+```{r save image, message=FALSE}
+ggsave("plot/plot_2020-01-28.png", p, width=12, height=12, units="in")
+```
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
+

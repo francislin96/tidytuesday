@@ -8,3 +8,9 @@ set_data_path <- function() {
 convert_to_readme <- function (filename="analysis.Rmd") {
     rmarkdown::render(input=filename, output_format="github_document", output_file="README.md")
 }
+
+# google maps api key stored at google_maps_key.txt
+read_key <- function(key_name) {
+    switch(key_name,
+           "google" = return(trimws(readr::read_file("../google_maps_key.txt"))))
+}
