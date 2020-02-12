@@ -1,0 +1,77 @@
+---
+title: "Hotels"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-02-11"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+[Antonio, Almeida and Nunes, 2019](https://www.sciencedirect.com/science/article/pii/S2352340918315191#f0010) has provided some hotel data for #TidyTuesday. While looking at this dataset, I noticed that a large amount of datapoints were reservations that were eventually cancelled. I decided to focus my efforts on seeing if I can tease out any trends that I see.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(readr)
+library(lubridate)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+## Load Data
+
+```{r load data, message=FALSE}
+hotels <- read_csv(paste0(data_path, "hotels.csv"))
+```
+
+## Manipulate Data
+
+Here, I used the `lubridate` package to derive the scheduled arrival date from the data, and find the difference in days between the cancellation date and the scheduled arrival date. I then wanted to see how the deposit type of the reservation affected the cancellation rates, so I turned that into factors.
+
+```{r manipulate data}
+cancels <- hotels %>%
+    filter(reservation_status=="Canceled") %>%
+    mutate(arrival_date = ymd(paste(arrival_date_year, arrival_date_month, arrival_date_day_of_month, sep="-"))) %>%
+    mutate(cancel_lead_time = as.numeric(arrival_date-ymd(reservation_status_date))) %>%
+    mutate(deposit = factor(ifelse(deposit_type == "No Deposit", "No Deposit", "Deposit"), levels=c("Deposit", "No Deposit")))
+```
+
+## Plot Data
+
+Here, I plotted the number of cancellations per cancellation lead time.
+
+```{r plot data, fig.width=8, fig.height=5}
+p <- ggplot(cancels %>% filter(cancel_lead_time < 51)) +
+    geom_bar(aes(x=cancel_lead_time, fill=deposit)) + 
+    labs(title="Hotel Cancellations", 
+         subtitle="Last-minute hotel cancellations occur more frequently, and tend to have no deposit",
+         x="Days between Cancellation and Scheduled Arrival Date", 
+         y="Number of Cancellations") + 
+    theme(legend.title=element_blank())
+p
+```
+
+From the plot above, it seems the closer you get to the scheduled arrival date, the more cancellations you receive, although it tapers off to the right less drastically than I would have expected. As cancellation lead time increases, the number of cancellation with no deposits increase while the number of cancellation with deposits decrease.
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-02-11.png", p, width=8, height=5, units="in")
+```
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
