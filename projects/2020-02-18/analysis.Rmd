@@ -1,0 +1,76 @@
+---
+title: "Food Consumption and CO2 Emissions"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-02-18"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+I'm not a bad cook, but my knowledge about cooking meat definitely exceeds my knowledge about making vegetarian or vegan dishes. In this dataset provided by [nu3](https://www.nu3.de/blogs/nutrition/food-carbon-footprint-index-2018), the consumption and corresponding CO2 emissions for each food category in each country allows us to see just how much more CO2 is produced by meat consumption. Here, I focused on only visualizing the meat category.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(readr)
+library(countrycode)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+## Load Data
+
+```{r load data, message=FALSE}
+food_consumption <- read_csv(paste0(data_path, "food_consumption.csv"))
+```
+
+## Manipulate Data
+
+Using the `countrycode` package, we can derive the continent that each country is in.
+
+```{r manipulate data}
+# add continent column
+food_consumption$continent <- countrycode(sourcevar=food_consumption$country, origin="country.name", destination="continent")
+
+# get average meat consumption
+meat_consumption <- food_consumption %>%
+    filter(food_category %in% c("Beef", "Fish", "Lamb & Goat", "Pork", "Poultry")) %>%
+    group_by(continent, food_category) %>%
+    summarise(mean_consumption=mean(consumption), mean_co2=mean(co2_emmission)) %>%
+    pivot_longer(c(-continent, -food_category), names_to="consumption", values_to="amount")
+```
+
+## Plot Data
+
+```{r plot data, fig.width=8, fig.height=4}
+p <- ggplot(meat_consumption, aes(x=continent, y=amount, fill=food_category)) + 
+    geom_bar(position="dodge", stat="identity") +
+    facet_wrap(~consumption, scales="free", labeller = as_labeller(c(mean_co2 = "Mean CO2 Emission (kg CO2/person/year)", mean_consumption = "Mean Meat Consumption (kg/person/year)"))) + 
+    labs(x="Continent", y="", fill='Meat Type')
+p
+```
+
+I'll admit that there are a few flaws with this plot. The most glaring is that it weighs each country in each continent equally and does not take into account the population. This type of analysis may best be accompanied by some other dataset with more information about each country. Then, we can see if country status or GDP has any affect on the ratio of consumption between meat and non-meat products.
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-02-18.png", p, width=8, height=4, units="in")
+```
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
