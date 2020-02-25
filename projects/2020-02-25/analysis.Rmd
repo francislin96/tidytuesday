@@ -1,0 +1,62 @@
+---
+title: "Measles"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-02-25"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+Get vaccinated! This week's data comes from the [Wall Street Journal](https://github.com/WSJ/measles-data). I tried to plot this on a map by county, but couldn't make it happen. Instead, I decided to explore violin graphs! While the data isn't super suitable for them, I just wanted to give it a try and see what happens.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+## Load Data
+
+```{r load data, message=FALSE}
+measles <- read_csv(paste0(data_path, "measles.csv"))
+```
+
+## Plot Data
+
+```{r plot data}
+# filter out datapoints with negative mmr or invalid type
+m <- measles %>%
+    filter(mmr >= 0, !is.na(type))
+
+# plot violin graphs
+p <- ggplot(data=m, aes(x=type, y=mmr, fill=type)) +
+    geom_violin() + 
+    theme(legend.position = "none") + 
+    labs(title="School's Measles, Mumps, and Rubella (MMR) vaccination rate", x="School Type", y="Percentage (%)")
+p
+```
+
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-02-25.png", p, width=8, height=4, units="in")
+```
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
