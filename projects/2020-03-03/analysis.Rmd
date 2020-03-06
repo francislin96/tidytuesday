@@ -1,0 +1,115 @@
+---
+title: "Hockey Goals"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-03-23"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+This week's #TidyTuesday was pretty exciting for me! I learned a new function from the tidyverse: `separate`, which turns a character column into multiple columns. Additionally, I learned to place an image annotation in ggplot. The data for this analysis comes from [HockeyReference.com](HockeyReference.com), and I made a graph similar to one in an article by the [Washington Post](https://www.washingtonpost.com/graphics/2020/sports/capitals/ovechkin-700-goals/?utm_campaign=wp_graphics&utm_medium=social&utm_source=twitter) celebrating [Alex Ovechkin](https://en.wikipedia.org/wiki/Alexander_Ovechkin)'s monumental achievement of 700 career hockey goals.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(readr)
+library(grid)
+library(jpeg)
+library(RCurl)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+game_goals <- read_csv(paste0(data_path, "game_goals.csv"))
+top_250 <- read_csv(paste0(data_path, "top_250.csv"))
+season_goals <- read_csv(paste0(data_path, "season_goals.csv"))
+```
+
+## Manipulate data
+
+Using the `separate` function, I was able to parse out players' ages, which was originally stored in the format "years-days" as a string, and calculate their ages as a numeric value. I then calculated the cumulative sum of goals throughout their careers.
+
+```{r manipulate data}
+cumsum_goals <- game_goals %>%
+    
+    # select only relevant columns
+    select(player, age, goals) %>%
+    
+    # get top 10 players in terms of total goals scored in career
+    add_count(player, wt=goals, name="temp") %>%
+    mutate(temp = dense_rank(desc(temp))) %>%
+    filter(temp %in% 1:10) %>%
+    select(-temp) %>%
+
+    # calculate age
+    separate(age, c("age_years", "age_days"), sep="-") %>%
+    mutate(age_years = as.numeric(age_years), age_days = as.numeric(age_days), age = age_years + age_days/365) %>%
+
+    # calculate cumulative sum of goal throughout age
+    group_by(player) %>%
+    arrange(age) %>%
+    mutate(csum_goals = cumsum(goals)) %>%
+    
+    # select relevant columns
+    select(player, age, csum_goals)
+```
+
+
+## Plot Data
+
+Here, I plotted the cumulative total of goals that the top 10 players scored as a function of their age. In addition, I used `annotation_custom` to add Alex Ovechkin's headshot into the ggplot image. I also highlighted his path to 700 goals.
+
+```{r plot data, fig.width=7, fig.height=5}
+# image
+image_grob <- grid::rasterGrob(jpeg::readJPEG(RCurl::getURLContent(unique(season_goals %>% filter(player == "Alex Ovechkin") %>% select(headshot))[1])), interpolate=TRUE)
+
+# plot
+p <- ggplot(cumsum_goals, aes(x=age, y=csum_goals, group=player)) + 
+    
+    # plot all players
+    geom_line(color = alpha("grey", 0.7)) + 
+    
+    # plot Alex Ovechkin
+    geom_line(data=cumsum_goals %>% filter(player == "Alex Ovechkin"), color=alpha("red", 1)) + 
+    
+    # horizontal line
+    geom_hline(yintercept=700, linetype="dashed", color=alpha("turquoise", 0.5)) + 
+    
+    # Alex's picture
+    annotation_custom(image_grob, xmin = 33.5, xmax = 38.5, ymin = 600, ymax = 800) + 
+    
+    # labels
+    labs(x="Age", y="Number of Career Goals", title="Alex Ovechkin has reached 700 goals in the NHL", subtitle="He is the second youngest NHL player to do so, behind Wayne Gretzky")
+p
+    
+```
+
+Congratulations to Alex!
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-03-23.png", p, width=7, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
