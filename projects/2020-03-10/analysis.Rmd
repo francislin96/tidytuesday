@@ -1,0 +1,171 @@
+---
+title: "College tuition, diversity, and pay"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-03-10"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+How beneficial is diversity in a college setting? In this analysis, I drew from several datasets to see if the diversity of a school is correlated to career success, defined as mid-career pay. I was also curious to see how my alma mater, UCLA, compared to other schools in both of these aspects.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(readr)
+library(ggrepel)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+tuition_cost <- read_csv(paste0(data_path, "tuition_cost.csv"))
+tuition_income <- read_csv(paste0(data_path, "tuition_income.csv"))
+salary_potential <- read_csv(paste0(data_path, "salary_potential.csv"))
+historical_tuition <- read_csv(paste0(data_path, "historical_tuition.csv"))
+diversity_school <- read_csv(paste0(data_path, "diversity_school.csv"))
+```
+
+
+## Manipulate data
+
+First, I needed a way to quantify diversity. One way was to use the [diversity index](https://diversity.missouristate.edu/DiversityIndex.htm), defined as the probability that two students chosen at random have different racial or ethnic backgrounds. Using a simple probability calculation, the diversity index can be calculated using just the `diversity_school` dataset. 
+
+Next, I wanted to find the mid-career pay and the type of school for all the schools. These variables can be found in the `salary_potential` and `tuition_cost` datasets, respectively. 
+
+Finally, I noticed that the schools weren't named uniformly across all the datasets. While I didn't perform a full fuzzy match, a decent number of schools were uniform, and I made some manual modifications to ensure that schools such as UC's and some Ivy League's were included.
+
+```{r manipulate data}
+# function to calculate diversity index
+calc_diversity_index <- function(d) {
+    return(1-(
+        (d$White/d$total_enrollment)^2 + 
+        (d$Black/d$total_enrollment)^2 + 
+        (d$`American Indian / Alaska Native`/d$total_enrollment)^2 + 
+        ((d$Asian+d$`Native Hawaiian / Pacific Islander`)/d$total_enrollment)^2 + 
+        (d$Hispanic/d$total_enrollment)^2 + 
+        (d$`Two Or More Races`/d$total_enrollment)^2 + 
+        (d$`Non-Resident Foreign`/d$total_enrollment)^2 + 
+        (d$Unknown/d$total_enrollment)^2
+    ))
+}
+
+# rename schools to match when joining across datasets
+salary_potential <- salary_potential %>%
+    mutate(name=gsub("University of California-", "University of California at ", name),
+           name=gsub("University-", "University at ", name))
+tuition_cost<- tuition_cost %>%
+    mutate(name=gsub("University of California: ", "University of California at ", name),
+           name=gsub("University: ", "University at ", name))
+tuition_cost$name[tuition_cost$name == "Harvard College"] <- "Harvard University"
+
+# create dataset with diversity index and mid-career pay for schools
+school_diversity_and_pay <- diversity_school %>%
+    
+    # drop na
+    drop_na(name, state) %>%
+    
+    # pivot wider to prepare calculating diversity index
+    pivot_wider(names_from=category, values_from=enrollment) %>%
+    
+    # calculate diversity index
+    mutate(di = calc_diversity_index(.)) %>%
+
+    # inner join on salary potential
+    inner_join(salary_potential, by = c("name" = "name", "state" = "state_name")) %>%
+    
+    # inner join on tuition_cost
+    inner_join(tuition_cost, by = c("name", "state")) %>%
+    
+    # select relevant columns
+    select(name, state, total_enrollment, di, mid_career_pay, type) %>%
+    
+    # boolean if school in California
+    mutate(isCA = ifelse(state=="California", "In California", "Not in California"))
+
+# rename school names to make them shorter/more aesthetic
+school_diversity_and_pay$name[school_diversity_and_pay$name == "University of California at Los Angeles"] <- "UCLA"
+school_diversity_and_pay$name[school_diversity_and_pay$name == "University of California at San Diego"] <- "UCSD"
+school_diversity_and_pay$name[school_diversity_and_pay$name == "University of California at Berkeley"] <- "Cal"
+school_diversity_and_pay$name[school_diversity_and_pay$name == "University of Southern California"] <- "USC"
+school_diversity_and_pay$name[school_diversity_and_pay$name == "California Polytechnic State University at San Luis Obispo"] <- "CalPoly SLO"
+school_diversity_and_pay$name[school_diversity_and_pay$name == "California Institute of Technology"] <- "CalTech"
+school_diversity_and_pay$name[school_diversity_and_pay$name == "Harvey Mudd College"] <- "Harvey Mudd"
+school_diversity_and_pay$name[school_diversity_and_pay$name == "Massachusetts Institute of Technology"] <- "MIT"
+school_diversity_and_pay$name[school_diversity_and_pay$name == "Stanford University"] <- "Stanford"
+school_diversity_and_pay$name[school_diversity_and_pay$name == "Yale University"] <- "Yale"
+school_diversity_and_pay$name[school_diversity_and_pay$name == "Harvard University"] <- "Harvard"
+```
+
+
+## Plot Data
+
+```{r plot data 1, fig.width=10, fig.height=5}
+p1 <- ggplot(school_diversity_and_pay, aes(x=di, y=mid_career_pay)) +
+    
+    # point out a few well-known schools
+    geom_text_repel(
+        data = . %>% mutate(label = ifelse(name %in% c("UCLA", "UCSD", "Cal", "USC", "CalPoly SLO", "CalTech", "Harvey Mudd","MIT", "Stanford", "Yale", "Harvard", "Colorado School of Mines"), name, "")),
+        aes(x=di, y=mid_career_pay, label = label, color=type), 
+        box.padding = 0.6,
+        show.legend = TRUE) +
+    
+    # create point for each school 
+    geom_point(aes(color=type)) + 
+    
+    # draw a general line of fit
+    geom_smooth(method = 'loess', se=FALSE, linetype="dashed") +
+    
+    # other aesthetics
+    coord_cartesian(xlim = c(0, 1)) +
+    labs(x="Diversity Index", y="Estimated Mid-Career Pay (USD)", title="Influence of School Diversity on Estimated Mid-Career Pay in Higher Education", subtitle="Mid-career pay increases as diversity index of school increases", color="School Type")
+p1
+```
+
+From the graph above, it is clear that as the school becomes more diverse, the mid-career pay also increases, although the relationship is not strictly linear. This generally makes sense, since the diversity of a school can expose a student to several different and new perspectives, thus preparing the student for the "real world" and setting him or her up for success. 
+
+Also notable is the fact that out of the top 20 schools with the highest mid-career pay, only 2 of them are public: Colorado School of Mines and UC Berkeley. Since private schools tend to be more expensive, it might be useful to analyze in another exercise if paying more for school results in higher pay, and if it is more or less correlated with mid-career pay than diversity index.
+
+A lot of schools in the upper right hand corner were California schools, so I became curious to see where California schools stand in comparison with the rest of the country.
+
+```{r plot data 2, fig.width=10, fig.height=5}
+p2 <- ggplot(school_diversity_and_pay, aes(x=di, y=mid_career_pay)) +
+
+    # create point for each school 
+    geom_point(aes(color=isCA)) + 
+    
+    # other aesthetics
+    coord_cartesian(xlim = c(0, 1)) +
+    labs(x="Diversity Index", y="Estimated Mid-Career Pay (USD)", title="Higher Education Diversity and Estimated Mid-Career Pay", subtitle="Californian students generally experience more diversity and higher mid-career pay.", color="")
+p2
+```
+
+I'm glad that my state of California is doing so well!
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot1_2020-03-10.png", p1, width=7, height=5, units="in")
+ggsave("plot/plot2_2020-03-10.png", p2, width=7, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
