@@ -1,0 +1,61 @@
+---
+title: ""
+author: "Francis Lin | #TidyTuesday |"
+date: "@DATE"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+data <- read_csv(paste0(data_path, "data.csv"))
+```
+
+
+## Manipulate data
+
+```{r manipulate data}
+
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=7, fig.height=5}
+
+```
+
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_@DATE.png", p, width=7, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```

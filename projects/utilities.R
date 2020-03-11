@@ -14,3 +14,10 @@ read_key <- function(key_name) {
     switch(key_name,
            "google" = return(trimws(readr::read_file("../google_maps_key.txt"))))
 }
+
+# create analysis.Rmd template
+new_analysis <- function(date) {
+    template <- readLines("../analysis_template.Rmd")
+    template <- gsub(pattern = "@DATE", replace = date, x = template)
+    writeLines(template, con="analysis.Rmd")
+}
