@@ -1,0 +1,72 @@
+---
+title: "The Office - Words and Numbers"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-03-17"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+The data of this analysis comes from the IMDB ratings from [data.world](https://data.world/anujjain7/the-office-imdb-ratings-dataset). I've watched some episodes of "The Office" several times, but I'm glad I don't see 'The Office' archetypes in my workplace.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(RColorBrewer)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+office_ratings <- read_csv(paste0(data_path, "office_ratings.csv"))
+```
+
+
+## Manipulate data
+
+```{r manipulate data}
+office_ratings <- office_ratings %>%
+    mutate(air_date=lubridate::ymd(air_date), season=factor(season))
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=8, fig.height=4}
+p <- ggplot(office_ratings, aes(x=air_date, y=imdb_rating, group=season, colour=season )) +
+    geom_line() + 
+    scale_color_brewer(palette="Set1") +
+    ylim(0, 10) +
+    labs(x="Airing Date", y="IMDB Rating", title="\"The Office\" Ratings by Season") +
+    theme(legend.position="none")
+p
+```
+
+If I had a little more time, I'd like to annotate some of the highs and lows of the ratings.
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-03-17.png", p, width=8, height=4, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
