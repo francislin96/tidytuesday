@@ -1,0 +1,84 @@
+---
+title: "Traumatic Brain Injury (TBI)"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-03-24"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+March is Brain Injury Awareness Month, and this week's #TidyTuesday brings in Traumatic Brain Injuries (TBI) data from the [CDC](https://www.cdc.gov/traumaticbraininjury/pdf/TBI-Surveillance-Report-FINAL_508.pdf) and [Veterans Brain Injury Center](https://dvbic.dcoe.mil/dod-worldwide-numbers-tbi). I actually had no idea TBI was so common; one of every 60 people in the U.S. lives with a TBI related disability. In the analysis below, I wanted to see the most common ways people received TBI.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+tbi_age <- read_csv(paste0(data_path, "tbi_age.csv"))
+tbi_year <- read_csv(paste0(data_path, "tbi_year.csv"))
+tbi_military <- read_csv(paste0(data_path, "tbi_military.csv"))
+```
+
+
+## Manipulate data
+
+```{r manipulate data}
+tbi_age <- tbi_age %>%
+    filter(!age_group %in% c("Total", "0-17"), injury_mechanism != "Intentional self-harm") %>%
+    mutate(age_group = factor(age_group, levels = c("0-4", "5-14", "15-24", "25-34", "35-44", "45-54", "55-64", "65-74", "75+")))
+tbi_year_deaths <- tbi_year %>%
+    filter(type=="Deaths", injury_mechanism != "Total")
+```
+
+
+## Plot Data
+
+```{r plot data 1, fig.width=8, fig.height=5}
+p1 <- ggplot(tbi_age, aes(x=age_group, y=rate_est, fill=injury_mechanism, )) + 
+    geom_bar(position="stack", stat="identity") + 
+    labs(x="Age Group", y="Rate/100,000", title="Rate of Traumatic Brain Injury by Age Group", fill="Injury Mechanism") + 
+    theme(axis.text.x = element_text(angle=45))
+p1
+```
+
+The 0-4 and the 75+ age groups both have very high rates of unintentional falls compared to the other age groups. In addition, people younger than 25 are often unintentionally struck by or against an object. The 15-24 age group is also more susceptible to motor vehicle crashes than other age groups.
+
+```{r plot data 2, fig.width=8, fig.height=5}
+p2 <- ggplot(tbi_year_deaths, aes(x=year, y=rate_est, color=injury_mechanism)) +
+    geom_line() +
+    labs(x="Year", y="Rate/100,000", title="Rate of Deaths by TBI Over the Years", color="Injury Mechanism")
+p2
+```
+
+The rate of TBI caused by intentional self-harm and unintentional falls has increased over the years while the rate of TBI caused by motor vehicle crashes has decreased.
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot1_2020-03-24.png", p1, width=8, height=5, units="in")
+ggsave("plot/plot2_2020-03-24.png", p2, width=8, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
