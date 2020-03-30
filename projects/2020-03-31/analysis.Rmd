@@ -1,0 +1,86 @@
+---
+title: "Beer Production"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-03-31"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+This week's data comes from the [Alcohol and Tobacco Tax and Trade Bureau](https://www.ttb.gov/beer/statistics). Here, I wanted to take a look to see how brewing materials has changed over time.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(lubridate)
+library(gridExtra)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+beer_states <- read_csv(paste0(data_path, "beer_states.csv"))
+beer_taxed <- read_csv(paste0(data_path, "beer_taxed.csv"))
+brewer_size <- read_csv(paste0(data_path, "brewer_size.csv"))
+brewing_materials <- read_csv(paste0(data_path, "brewing_materials.csv"))
+```
+
+
+## Manipulate data
+
+Here, I filtered out all of the rows that displayed aggregate data, and reordered the "type" column so that the category "Other" appears last in the plots below.
+
+```{r manipulate data}
+materials <- brewing_materials %>%
+    filter(!grepl("^Total", material_type)) %>%
+    mutate(date=ymd(paste(year, month, 1,sep="-")), amount_tons = month_current/2000) %>%
+    mutate(type=fct_relevel(factor(type), "Other", after=Inf)) %>%
+    select(date, material_type, type, amount_tons)
+```
+
+
+## Plot Data
+
+This week, I learned a few more tricks on using `ggplot`. The `grid.arrange` function from the `gridExtra` package allows me to have different legends for each of the plots in the plot matrix.
+
+```{r plot data, fig.width=7, fig.height=5}
+options(scipen=100000)
+materials_split = split(materials, f=materials$material_type)
+
+p1 <- ggplot(materials_split$`Grain Products`, aes(x=date, y=amount_tons, color=type)) + 
+    geom_line() + 
+    labs(x="Date", y="Amount (tons)", color="Type") +
+    facet_wrap(~material_type)
+p2 <- p1 %+% materials_split$`Non-Grain Products`
+
+p <- grid.arrange(p1, p2)
+```
+
+According to the data, malt products have decreased drastically in 2016, and hops had two large spikes in at the end of 2014 and 2015. I'm not sure how accurate this data is, but it looks that way.
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-03-31.png", p, width=7, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
