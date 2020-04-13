@@ -1,0 +1,73 @@
+---
+title: "Tour de France"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-04-07"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+I learned quite a bit about the Tour de France this week doing this #TidyTuesday. For example, I found out that even though there is one general winner for the Tour de France, there are other competitions within this event. Lesser known teams could win just one portion of the race to get some publicity, and there are some interesting strategies that teams try to beat the other teams. This week's data comes from the [tdf package](https://github.com/alastairrushworth/tdf).
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+tdf_winners <- read_csv(paste0(data_path, "tdf_winners.csv"))
+```
+
+
+## Manipulate data
+
+In this step, I just selected the relevant columns, turned the time_margin to minutes, and dropped any rows with NA.
+
+```{r manipulate data}
+winners <- tdf_winners %>% 
+    select(start_date, winner_name, time_overall, distance, time_margin) %>%
+    mutate(time_margin=time_margin*60) %>%
+    drop_na()
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=7, fig.height=5}
+p <- ggplot() + 
+    geom_point(data=winners, aes(x=start_date, y=time_overall, size=time_margin, color=distance), alpha=0.5) + 
+    scale_color_gradient(low="blue", high="red") + 
+    labs(x="Year", y="Total Time (Hours) to Finish Race", size="Time Margin (minutes)", color="Distance (km)", alpha="", title="Tour de France")
+p
+```
+
+From the graph above, it seems that the Tour de France has become shorter and and more competitive over time.
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-04-07.png", p, width=7, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
