@@ -1,0 +1,63 @@
+---
+title: "Rap Artists"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-04-14"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+[BBC Music](http://www.bbc.com/culture/story/20191007-the-greatest-hip-hop-songs-of-all-time-who-voted) asked multiple critics what their top 5 hip-hop tracks were. Based on the answers, they then awarded points to each song. The analysis below visualizes their responses.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(ggrepel)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+rankings <- read_csv(paste0(data_path, "rankings.csv"))
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=8, fig.height=5}
+p <- ggplot(rankings, aes(x=year, y=points, color=gender)) +
+    scale_color_manual(values = c("female"="red", "male"="royalblue", "mixed"="purple")) +
+    geom_point(alpha=0.25) + 
+    geom_text_repel(size = 2.5, box.padding = 0.5, aes(label=ifelse(points>as.numeric(quantile(points,0.95)),paste(title, "\n-", artist),''))) + 
+    labs(title="Rap Artists and Critic Ratings", x="Year", y="Critic Points", color="Gender")
+p
+```
+
+The top 5% rap songs with the highest points given by critics between 1980 to 2019 have all been male artists, even though `r format(sum(rankings['gender']!='male')/nrow(rankings)*100, digits=4)`% of the songs are by female or mixed gender artists. "Juicy" by The Notorious B.I.G. was a huge favorite.
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-04-14.png", p, width=8, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
