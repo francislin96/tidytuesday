@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style type="text/css">
+@font-face {
+font-family: octicons-link;
+src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+body {
+-webkit-text-size-adjust: 100%;
+text-size-adjust: 100%;
+color: #333;
+font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+font-size: 16px;
+line-height: 1.6;
+word-wrap: break-word;
+}
+a {
+background-color: transparent;
+}
+a:active,
+a:hover {
+outline: 0;
+}
+strong {
+font-weight: bold;
+}
+h1 {
+font-size: 2em;
+margin: 0.67em 0;
+}
+img {
+border: 0;
+}
+hr {
+box-sizing: content-box;
+height: 0;
+}
+pre {
+overflow: auto;
+}
+code,
+kbd,
+pre {
+font-family: monospace, monospace;
+font-size: 1em;
+}
+input {
+color: inherit;
+font: inherit;
+margin: 0;
+}
+html input[disabled] {
+cursor: default;
+}
+input {
+line-height: normal;
+}
+input[type="checkbox"] {
+box-sizing: border-box;
+padding: 0;
+}
+table {
+border-collapse: collapse;
+border-spacing: 0;
+}
+td,
+th {
+padding: 0;
+}
+* {
+box-sizing: border-box;
+}
+input {
+font: 13px / 1.4 Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+a {
+color: #4078c0;
+text-decoration: none;
+}
+a:hover,
+a:active {
+text-decoration: underline;
+}
+hr {
+height: 0;
+margin: 15px 0;
+overflow: hidden;
+background: transparent;
+border: 0;
+border-bottom: 1px solid #ddd;
+}
+hr:before {
+display: table;
+content: "";
+}
+hr:after {
+display: table;
+clear: both;
+content: "";
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+margin-top: 15px;
+margin-bottom: 15px;
+line-height: 1.1;
+}
+h1 {
+font-size: 30px;
+}
+h2 {
+font-size: 21px;
+}
+h3 {
+font-size: 16px;
+}
+h4 {
+font-size: 14px;
+}
+h5 {
+font-size: 12px;
+}
+h6 {
+font-size: 11px;
+}
+blockquote {
+margin: 0;
+}
+ul,
+ol {
+padding: 0;
+margin-top: 0;
+margin-bottom: 0;
+}
+ol ol,
+ul ol {
+list-style-type: lower-roman;
+}
+ul ul ol,
+ul ol ol,
+ol ul ol,
+ol ol ol {
+list-style-type: lower-alpha;
+}
+dd {
+margin-left: 0;
+}
+code {
+font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+font-size: 12px;
+}
+pre {
+margin-top: 0;
+margin-bottom: 0;
+font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+.select::-ms-expand {
+opacity: 0;
+}
+.octicon {
+font: normal normal normal 16px/1 octicons-link;
+display: inline-block;
+text-decoration: none;
+text-rendering: auto;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+}
+.octicon-link:before {
+content: '\f05c';
+}
+.markdown-body:before {
+display: table;
+content: "";
+}
+.markdown-body:after {
+display: table;
+clear: both;
+content: "";
+}
+.markdown-body>*:first-child {
+margin-top: 0 !important;
+}
+.markdown-body>*:last-child {
+margin-bottom: 0 !important;
+}
+a:not([href]) {
+color: inherit;
+text-decoration: none;
+}
+.anchor {
+display: inline-block;
+padding-right: 2px;
+margin-left: -18px;
+}
+.anchor:focus {
+outline: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+margin-top: 1em;
+margin-bottom: 16px;
+font-weight: bold;
+line-height: 1.4;
+}
+h1 .octicon-link,
+h2 .octicon-link,
+h3 .octicon-link,
+h4 .octicon-link,
+h5 .octicon-link,
+h6 .octicon-link {
+color: #000;
+vertical-align: middle;
+visibility: hidden;
+}
+h1:hover .anchor,
+h2:hover .anchor,
+h3:hover .anchor,
+h4:hover .anchor,
+h5:hover .anchor,
+h6:hover .anchor {
+text-decoration: none;
+}
+h1:hover .anchor .octicon-link,
+h2:hover .anchor .octicon-link,
+h3:hover .anchor .octicon-link,
+h4:hover .anchor .octicon-link,
+h5:hover .anchor .octicon-link,
+h6:hover .anchor .octicon-link {
+visibility: visible;
+}
+h1 {
+padding-bottom: 0.3em;
+font-size: 2.25em;
+line-height: 1.2;
+border-bottom: 1px solid #eee;
+}
+h1 .anchor {
+line-height: 1;
+}
+h2 {
+padding-bottom: 0.3em;
+font-size: 1.75em;
+line-height: 1.225;
+border-bottom: 1px solid #eee;
+}
+h2 .anchor {
+line-height: 1;
+}
+h3 {
+font-size: 1.5em;
+line-height: 1.43;
+}
+h3 .anchor {
+line-height: 1.2;
+}
+h4 {
+font-size: 1.25em;
+}
+h4 .anchor {
+line-height: 1.2;
+}
+h5 {
+font-size: 1em;
+}
+h5 .anchor {
+line-height: 1.1;
+}
+h6 {
+font-size: 1em;
+color: #777;
+}
+h6 .anchor {
+line-height: 1.1;
+}
+p,
+blockquote,
+ul,
+ol,
+dl,
+table,
+pre {
+margin-top: 0;
+margin-bottom: 16px;
+}
+hr {
+height: 4px;
+padding: 0;
+margin: 16px 0;
+background-color: #e7e7e7;
+border: 0 none;
+}
+ul,
+ol {
+padding-left: 2em;
+}
+ul ul,
+ul ol,
+ol ol,
+ol ul {
+margin-top: 0;
+margin-bottom: 0;
+}
+li>p {
+margin-top: 16px;
+}
+dl {
+padding: 0;
+}
+dl dt {
+padding: 0;
+margin-top: 16px;
+font-size: 1em;
+font-style: italic;
+font-weight: bold;
+}
+dl dd {
+padding: 0 16px;
+margin-bottom: 16px;
+}
+blockquote {
+padding: 0 15px;
+color: #777;
+border-left: 4px solid #ddd;
+}
+blockquote>:first-child {
+margin-top: 0;
+}
+blockquote>:last-child {
+margin-bottom: 0;
+}
+table {
+display: block;
+width: 100%;
+overflow: auto;
+word-break: normal;
+word-break: keep-all;
+}
+table th {
+font-weight: bold;
+}
+table th,
+table td {
+padding: 6px 13px;
+border: 1px solid #ddd;
+}
+table tr {
+background-color: #fff;
+border-top: 1px solid #ccc;
+}
+table tr:nth-child(2n) {
+background-color: #f8f8f8;
+}
+img {
+max-width: 100%;
+box-sizing: content-box;
+background-color: #fff;
+}
+code {
+padding: 0;
+padding-top: 0.2em;
+padding-bottom: 0.2em;
+margin: 0;
+font-size: 85%;
+background-color: rgba(0,0,0,0.04);
+border-radius: 3px;
+}
+code:before,
+code:after {
+letter-spacing: -0.2em;
+content: "\00a0";
+}
+pre>code {
+padding: 0;
+margin: 0;
+font-size: 100%;
+word-break: normal;
+white-space: pre;
+background: transparent;
+border: 0;
+}
+.highlight {
+margin-bottom: 16px;
+}
+.highlight pre,
+pre {
+padding: 16px;
+overflow: auto;
+font-size: 85%;
+line-height: 1.45;
+background-color: #f7f7f7;
+border-radius: 3px;
+}
+.highlight pre {
+margin-bottom: 0;
+word-break: normal;
+}
+pre {
+word-wrap: normal;
+}
+pre code {
+display: inline;
+max-width: initial;
+padding: 0;
+margin: 0;
+overflow: initial;
+line-height: inherit;
+word-wrap: normal;
+background-color: transparent;
+border: 0;
+}
+pre code:before,
+pre code:after {
+content: normal;
+}
+kbd {
+display: inline-block;
+padding: 3px 5px;
+font-size: 11px;
+line-height: 10px;
+color: #555;
+vertical-align: middle;
+background-color: #fcfcfc;
+border: solid 1px #ccc;
+border-bottom-color: #bbb;
+border-radius: 3px;
+box-shadow: inset 0 -1px 0 #bbb;
+}
+.pl-c {
+color: #969896;
+}
+.pl-c1,
+.pl-s .pl-v {
+color: #0086b3;
+}
+.pl-e,
+.pl-en {
+color: #795da3;
+}
+.pl-s .pl-s1,
+.pl-smi {
+color: #333;
+}
+.pl-ent {
+color: #63a35c;
+}
+.pl-k {
+color: #a71d5d;
+}
+.pl-pds,
+.pl-s,
+.pl-s .pl-pse .pl-s1,
+.pl-sr,
+.pl-sr .pl-cce,
+.pl-sr .pl-sra,
+.pl-sr .pl-sre {
+color: #183691;
+}
+.pl-v {
+color: #ed6a43;
+}
+.pl-id {
+color: #b52a1d;
+}
+.pl-ii {
+background-color: #b52a1d;
+color: #f8f8f8;
+}
+.pl-sr .pl-cce {
+color: #63a35c;
+font-weight: bold;
+}
+.pl-ml {
+color: #693a17;
+}
+.pl-mh,
+.pl-mh .pl-en,
+.pl-ms {
+color: #1d3e81;
+font-weight: bold;
+}
+.pl-mq {
+color: #008080;
+}
+.pl-mi {
+color: #333;
+font-style: italic;
+}
+.pl-mb {
+color: #333;
+font-weight: bold;
+}
+.pl-md {
+background-color: #ffecec;
+color: #bd2c00;
+}
+.pl-mi1 {
+background-color: #eaffea;
+color: #55a532;
+}
+.pl-mdr {
+color: #795da3;
+font-weight: bold;
+}
+.pl-mo {
+color: #1d3e81;
+}
+kbd {
+display: inline-block;
+padding: 3px 5px;
+font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+line-height: 10px;
+color: #555;
+vertical-align: middle;
+background-color: #fcfcfc;
+border: solid 1px #ccc;
+border-bottom-color: #bbb;
+border-radius: 3px;
+box-shadow: inset 0 -1px 0 #bbb;
+}
+.task-list-item {
+list-style-type: none;
+}
+.task-list-item+.task-list-item {
+margin-top: 3px;
+}
+.task-list-item input {
+margin: 0 0.35em 0.25em -1.6em;
+vertical-align: middle;
+}
+:checked+.radio-label {
+z-index: 1;
+position: relative;
+border-color: #4078c0;
+}
+.sourceLine {
+display: inline-block;
+}
+code .kw { color: #000000; }
+code .dt { color: #ed6a43; }
+code .dv { color: #009999; }
+code .bn { color: #009999; }
+code .fl { color: #009999; }
+code .ch { color: #009999; }
+code .st { color: #183691; }
+code .co { color: #969896; }
+code .ot { color: #0086b3; }
+code .al { color: #a61717; }
+code .fu { color: #63a35c; }
+code .er { color: #a61717; background-color: #e3d2d2; }
+code .wa { color: #000000; }
+code .cn { color: #008080; }
+code .sc { color: #008080; }
+code .vs { color: #183691; }
+code .ss { color: #183691; }
+code .im { color: #000000; }
+code .va {color: #008080; }
+code .cf { color: #000000; }
+code .op { color: #000000; }
+code .bu { color: #000000; }
+code .ex { color: #000000; }
+code .pp { color: #999999; }
+code .at { color: #008080; }
+code .do { color: #969896; }
+code .an { color: #008080; }
+code .cv { color: #008080; }
+code .in { color: #008080; }
+</style>
+<style>
+body {
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+  padding-top: 0px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1 id="gdpr-fines">GDPR Fines</h1>
+<p>Francis Lin | #TidyTuesday | 2020-04-21</p>
+<h1 id="introduction">Introduction</h1>
+<p>According to <a href="https://en.wikipedia.org/wiki/General_Data_Protection_Regulation">Wikipedia</a>, The General Data Protection Regulation (EU) 2016/679 (GDPR) is a regulation in EU law on data protection and privacy in the European Union (EU) and the European Economic Area (EEA). In this analysis, I wanted to see which articles result in the highest amounts of fines.</p>
+<h1 id="r-program">R Program</h1>
+<h2 id="set-up">Set up</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># source utilities</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">source</span>(<span class="st">&quot;../utilities.R&quot;</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># packages</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co"># set data path</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">data_path &lt;-<span class="st"> </span><span class="kw">set_data_path</span>()</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co"># create plot folder if doesn't exist</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="cf">if</span> (<span class="op">!</span><span class="kw">dir.exists</span>(<span class="st">&quot;./plot&quot;</span>)) {<span class="kw">dir.create</span>(<span class="st">&quot;./plot&quot;</span>)}</a></code></pre></div>
+<h2 id="load-data">Load Data</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">gdpr_text &lt;-<span class="st"> </span><span class="kw">read_tsv</span>(<span class="kw">paste0</span>(data_path, <span class="st">&quot;gdpr_text.tsv&quot;</span>))</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">gdpr_violations &lt;-<span class="st"> </span><span class="kw">read_tsv</span>(<span class="kw">paste0</span>(data_path, <span class="st">&quot;gdpr_violations.tsv&quot;</span>))</a></code></pre></div>
+<h2 id="manipulate-data">Manipulate data</h2>
+<p>A lot of this work was done by <a href="https://juliasilge.com/blog/gdpr-violations/">Julia Silge</a>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">gdpr_tidy &lt;-<span class="st"> </span>gdpr_violations <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="st">  </span><span class="kw">distinct</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">article =</span> <span class="kw">str_extract_all</span>(article_violated, <span class="st">&quot;Art.[:digit:]+|Art. [:digit:]+&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total_articles =</span> <span class="kw">map_int</span>(article, length)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">avg_price =</span> price<span class="op">/</span>total_articles) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="st">  </span><span class="kw">unnest</span>(article) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="st">  </span><span class="kw">add_count</span>(article) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="st">  </span><span class="kw">filter</span>(n <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>n) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="st">  </span><span class="kw">select</span>(article, avg_price) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">article =</span> <span class="kw">fct_reorder</span>(article, avg_price))</a></code></pre></div>
+<h2 id="plot-data">Plot Data</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(gdpr_tidy) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>article, <span class="dt">y=</span>avg_price)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_y_log10</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Article&quot;</span>, <span class="dt">y=</span><span class="st">&quot;Fine (EUR)&quot;</span>, <span class="dt">title=</span><span class="st">&quot;GDPR Fines&quot;</span>)</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">p</a></code></pre></div>
+<pre><code>## Warning: Transformation introduced infinite values in continuous y-axis
+
+## Warning: Removed 12 rows containing non-finite values (stat_boxplot).
+</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Article 32 resulted in the highest average fine amount. You can find the text of the regulation <a href="https://www.privacy-regulation.eu/en/article-32-security-of-processing-GDPR.htm">here</a>.</p>
+<h2 id="save-image">Save Image</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">ggsave</span>(<span class="st">&quot;plot/plot_2020-04-21.png&quot;</span>, p, <span class="dt">width=</span><span class="dv">7</span>, <span class="dt">height=</span><span class="dv">5</span>, <span class="dt">units=</span><span class="st">&quot;in&quot;</span>)</a></code></pre></div>
+<pre><code>## Warning: Transformation introduced infinite values in continuous y-axis
+
+## Warning: Removed 12 rows containing non-finite values (stat_boxplot).
+</code></pre>
+<h2 id="session-info">Session Info</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
+<pre><code>## R version 3.6.1 (2019-07-05)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 18.04.3 LTS
+## 
+## Matrix products: default
+## BLAS/LAPACK: /opt/intel/compilers_and_libraries_2018.2.199/linux/mkl/lib/intel64_lin/libmkl_gf_lp64.so
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
+##  [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+## [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] forcats_0.5.0   stringr_1.4.0   dplyr_0.8.5     purrr_0.3.3     readr_1.3.1     tidyr_1.0.2    
+## [7] tibble_3.0.0    ggplot2_3.3.0   tidyverse_1.3.0
+## 
+## loaded via a namespace (and not attached):
+##  [1] tidyselect_1.0.0 xfun_0.12        haven_2.2.0      lattice_0.20-38  colorspace_1.4-1 vctrs_0.2.4     
+##  [7] generics_0.0.2   htmltools_0.4.0  yaml_2.2.1       rlang_0.4.5      pillar_1.4.3     glue_1.4.0      
+## [13] withr_2.1.2      DBI_1.1.0        dbplyr_1.4.2     modelr_0.1.6     readxl_1.3.1     lifecycle_0.2.0 
+## [19] munsell_0.5.0    gtable_0.3.0     cellranger_1.1.0 rvest_0.3.5      evaluate_0.14    knitr_1.28      
+## [25] parallel_3.6.1   fansi_0.4.1      broom_0.5.5      Rcpp_1.0.4.6     scales_1.1.0     backports_1.1.6 
+## [31] jsonlite_1.6.1   farver_2.0.3     fs_1.4.0         hms_0.5.3        packrat_0.5.0    digest_0.6.25   
+## [37] stringi_1.4.6    grid_3.6.1       cli_2.0.2        tools_3.6.1      magrittr_1.5     crayon_1.3.4    
+## [43] pkgconfig_2.0.3  ellipsis_0.3.0   xml2_1.3.1       reprex_0.3.0     lubridate_1.7.4  rmarkdown_2.1   
+## [49] assertthat_0.2.1 httr_1.4.1       rstudioapi_0.11  R6_2.4.1         nlme_3.1-145     compiler_3.6.1
+</code></pre>
+
+</body>
+</html>

@@ -1,0 +1,82 @@
+---
+title: "GDPR Fines"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-04-21"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+
+According to [Wikipedia](https://en.wikipedia.org/wiki/General_Data_Protection_Regulation), The General Data Protection Regulation (EU) 2016/679 (GDPR) is a regulation in EU law on data protection and privacy in the European Union (EU) and the European Economic Area (EEA). In this analysis, I wanted to see which articles result in the highest amounts of fines.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+gdpr_text <- read_tsv(paste0(data_path, "gdpr_text.tsv"))
+gdpr_violations <- read_tsv(paste0(data_path, "gdpr_violations.tsv"))
+```
+
+
+## Manipulate data
+
+A lot of this work was done by [Julia Silge](https://juliasilge.com/blog/gdpr-violations/).
+
+```{r manipulate data}
+gdpr_tidy <- gdpr_violations %>%
+  distinct() %>%
+  mutate(article = str_extract_all(article_violated, "Art.[:digit:]+|Art. [:digit:]+")) %>%
+  mutate(total_articles = map_int(article, length)) %>% 
+  mutate(avg_price = price/total_articles) %>%
+  unnest(article) %>%
+  add_count(article) %>%
+  filter(n > 10) %>%
+  select(-n) %>%
+  select(article, avg_price) %>%
+  mutate(article = fct_reorder(article, avg_price))
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=7, fig.height=5}
+p <- ggplot(gdpr_tidy) +
+  geom_boxplot(aes(x=article, y=avg_price)) + 
+  scale_y_log10() + 
+  labs(x="Article", y="Fine (EUR)", title="GDPR Fines")
+p
+```
+
+Article 32 resulted in the highest average fine amount. You can find the text of the regulation [here](https://www.privacy-regulation.eu/en/article-32-security-of-processing-GDPR.htm).
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-04-21.png", p, width=7, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
