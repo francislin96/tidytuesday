@@ -1,0 +1,128 @@
+---
+title: "Broadway Weekly Grosses"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-04-28"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+I wanted to try my hand at some animated graphs again. This week's data comes from [Playbill](https://www.playbill.com/grosses). In this analysis, I made a racing bar chart using Broadway weekly grosses.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(lubridate)
+library(gganimate)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+grosses <- read_csv(paste0(data_path, "grosses.csv"))
+```
+
+
+## Manipulate data
+
+To make a racing bar chart, I needed to interpolate between given values.
+
+```{r manipulate data}
+grosses_df <- grosses %>%
+  
+  # select relevant columns
+  select(week_ending, show, weekly_gross) %>%
+    
+  # find sum of gross per week per show
+  group_by(week_ending, show) %>%
+  summarise(weekly_gross=sum(weekly_gross)) %>%
+  ungroup() %>%
+    
+  # sort by week
+  mutate(week_ending=ymd(week_ending)) %>%
+  arrange(week_ending) %>%
+    
+  # calculate cumulative sum
+  mutate(cumsum=ave(weekly_gross, show, FUN=cumsum))
+  
+grosses_df_interp <- grosses_df %>%
+  # interpolate between shows and find cumulative sum
+  group_by(show) %>%
+  filter(n()>1) %>%
+  complete(week_ending = full_seq(grosses_df$week_ending, 1)) %>%
+  mutate(cumsum_smooth = (approx(x = week_ending, y = cumsum, xout = week_ending)$y)/1000000) %>%
+  fill(cumsum_smooth) %>%
+  
+  # rank by week
+  select(week_ending, show, cumsum_smooth) %>%
+  group_by(week_ending) %>% 
+  mutate(rank = min_rank(-cumsum_smooth) * 1) %>%
+  
+  # choose top 10 per week
+  filter(rank <= 10) %>%
+  ungroup()
+```
+
+
+## Plot Data
+
+The .gif takes a long time to render.. be patient!
+
+```{r plot data, fig.width=7, fig.height=5}
+p <- ggplot(grosses_df_interp, aes(x=rank, y=show, label=show, group=show, fill = show)) +
+  
+  # tile
+  geom_tile(aes(y=cumsum_smooth/2, height=cumsum_smooth, width=0.9, fill=show), alpha=0.8) +
+  
+  # label of show
+  geom_text(aes(y = cumsum_smooth, label = show, hjust = ifelse(cumsum_smooth > 800, 1, 0))) +
+    
+  # flip coordinate
+  coord_flip(clip = "off", expand = FALSE) +
+    
+  # display dollar amounts with commas
+  scale_y_continuous(labels = scales::comma) +
+    
+  # display shows in descending order
+  scale_x_reverse() +
+    
+  # aesthetics
+  theme_minimal() +
+  theme(plot.title=element_text(face="bold", hjust=0, size=30), axis.ticks.y=element_blank(), axis.text.y=element_blank(), panel.grid.major = element_blank(), legend.position="none") +
+  labs(title='{format(as.Date(closest_state), "%Y %b %d")}', x="", y="Total Gross (Millions of Dollars)") +
+  
+  # animation
+  transition_states(week_ending, transition_length=5, state_length=1, wrap = FALSE) +
+  ease_aes("cubic-in-out")
+
+animation <- animate(p, nframes=27000, fps=50, end_pause=100, width=546, height=390)
+animation
+```
+
+
+## Save Image
+
+```{r save image}
+anim_save("plot/plot_2020-04-28.gif", animation)
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
