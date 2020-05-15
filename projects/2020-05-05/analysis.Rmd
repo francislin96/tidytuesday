@@ -71,7 +71,7 @@ villagers_link <- rbind(villagers_species_personality_link, villagers_personalit
 
 ## Plot Data
 
-```{r plot data, fig.width=7, fig.height=5}
+```{r plot data, fig.width=7, fig.height=5, fig.show='hide'}
 p <- plot_ly(
     type = "sankey",
     orientation = "h",
@@ -85,16 +85,16 @@ p <- plot_ly(
         source = villagers_link$source-1,
         target = villagers_link$target-1,
         value =  villagers_link$value
-    )
-) %>% layout(
+    )) %>% 
+  layout(
     title = "Species, Personalities, and Genders in Animal Crossing - New Horizons",
-    font = list(
-      size = 10
+    font = list(size = 10)
     )
-)
 
-p
+#p
 ```
+
+I was able to see the interactive Sankey diagram within RStudio, but rendering it to either a .md or .html file caused me problems, so I have just saved it to a .png and displayed it below. If anybody knows how to solve this solution, please reach out!
 
 ![ANCH Sankey Diagram](plot/plot_2020-05-05.png)
 

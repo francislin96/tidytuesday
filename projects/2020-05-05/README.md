@@ -88,18 +88,19 @@ p <- plot_ly(
         source = villagers_link$source-1,
         target = villagers_link$target-1,
         value =  villagers_link$value
-    )
-) %>% layout(
+    )) %>% 
+  layout(
     title = "Species, Personalities, and Genders in Animal Crossing - New Horizons",
-    font = list(
-      size = 10
+    font = list(size = 10)
     )
-)
 
-p
+#p
 ```
 
-![](README_files/figure-gfm/plot%20data-1.png)<!-- -->
+I was able to see the interactive Sankey diagram within RStudio, but
+rendering it to either a .md or .html file caused me problems, so I have
+just saved it to a .png and displayed it below. If anybody knows how to
+solve this solution, please reach out\!
 
 ![ANCH Sankey Diagram](plot/plot_2020-05-05.png)
 
@@ -132,21 +133,22 @@ sessionInfo()
     ##  [6] readr_1.3.1     tidyr_1.0.2     tibble_3.0.0    ggplot2_3.3.0   tidyverse_1.3.0
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_1.0.4.6       lubridate_1.7.4    lattice_0.20-38    prettyunits_1.1.1 
-    ##  [5] ps_1.3.2           assertthat_0.2.1   packrat_0.5.0      digest_0.6.25     
-    ##  [9] R6_2.4.1           cellranger_1.1.0   backports_1.1.6    stats4_3.6.1      
-    ## [13] reprex_0.3.0       evaluate_0.14      httr_1.4.1         pillar_1.4.3      
-    ## [17] rlang_0.4.5        lazyeval_0.2.2     readxl_1.3.1       rstudioapi_0.11   
-    ## [21] data.table_1.12.8  callr_3.4.3        rmarkdown_2.1      webshot_0.5.2     
-    ## [25] loo_2.2.0          htmlwidgets_1.5.1  munsell_0.5.0      broom_0.5.5       
-    ## [29] rstan_2.19.3       compiler_3.6.1     modelr_0.1.6       xfun_0.12         
-    ## [33] pkgconfig_2.0.3    pkgbuild_1.0.6     htmltools_0.4.0    tidyselect_1.0.0  
-    ## [37] gridExtra_2.3      matrixStats_0.56.0 fansi_0.4.1        viridisLite_0.3.0 
-    ## [41] crayon_1.3.4       dbplyr_1.4.2       withr_2.1.2        grid_3.6.1        
-    ## [45] nlme_3.1-145       jsonlite_1.6.1     gtable_0.3.0       lifecycle_0.2.0   
-    ## [49] DBI_1.1.0          magrittr_1.5       StanHeaders_2.19.0 scales_1.1.0      
-    ## [53] cli_2.0.2          stringi_1.4.6      fs_1.4.0           xml2_1.3.1        
-    ## [57] ellipsis_0.3.0     generics_0.0.2     vctrs_0.2.4        tools_3.6.1       
-    ## [61] glue_1.4.0         hms_0.5.3          crosstalk_1.1.0.1  processx_3.4.2    
-    ## [65] parallel_3.6.1     yaml_2.2.1         inline_0.3.15      colorspace_1.4-1  
-    ## [69] rvest_0.3.5        knitr_1.28         haven_2.2.0
+    ##  [1] httr_1.4.1         jsonlite_1.6.1     viridisLite_0.3.0  modelr_0.1.6      
+    ##  [5] StanHeaders_2.19.0 assertthat_0.2.1   highr_0.8          stats4_3.6.1      
+    ##  [9] cellranger_1.1.0   yaml_2.2.1         pillar_1.4.3       backports_1.1.6   
+    ## [13] lattice_0.20-38    glue_1.4.0         digest_0.6.25      rvest_0.3.5       
+    ## [17] colorspace_1.4-1   htmltools_0.4.0    pkgconfig_2.0.3    rstan_2.19.3      
+    ## [21] broom_0.5.5        haven_2.2.0        scales_1.1.0       webshot_0.5.2     
+    ## [25] processx_3.4.2     generics_0.0.2     ellipsis_0.3.0     withr_2.1.2       
+    ## [29] lazyeval_0.2.2     cli_2.0.2          mime_0.9           magrittr_1.5      
+    ## [33] crayon_1.3.4       readxl_1.3.1       evaluate_0.14      ps_1.3.2          
+    ## [37] fs_1.4.0           fansi_0.4.1        nlme_3.1-145       xml2_1.3.1        
+    ## [41] pkgbuild_1.0.6     tools_3.6.1        loo_2.2.0          data.table_1.12.8 
+    ## [45] prettyunits_1.1.1  hms_0.5.3          lifecycle_0.2.0    matrixStats_0.56.0
+    ## [49] munsell_0.5.0      reprex_0.3.0       callr_3.4.3        packrat_0.5.0     
+    ## [53] compiler_3.6.1     rlang_0.4.5        grid_3.6.1         rstudioapi_0.11   
+    ## [57] htmlwidgets_1.5.1  crosstalk_1.1.0.1  rmarkdown_2.1      gtable_0.3.0      
+    ## [61] inline_0.3.15      DBI_1.1.0          markdown_1.1       R6_2.4.1          
+    ## [65] gridExtra_2.3      lubridate_1.7.4    knitr_1.28         stringi_1.4.6     
+    ## [69] parallel_3.6.1     Rcpp_1.0.4.6       vctrs_0.2.4        dbplyr_1.4.2      
+    ## [73] tidyselect_1.0.0   xfun_0.12
