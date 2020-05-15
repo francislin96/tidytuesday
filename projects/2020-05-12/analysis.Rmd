@@ -1,0 +1,98 @@
+---
+title: "Volcano Eruptions"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-05-12"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+Today, I played around with the `rnaturalearth` package by plotting out the locations of volcanos! The data was supplied by [The Smithsonian Institute](https://volcano.si.edu/).
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(rnaturalearth)
+library(lubridate)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+volcano <- read_csv(paste0(data_path, "volcano.csv"))
+```
+
+
+## Manipulate data
+
+Here I calculated the number of years elapsed since the last eruption of each volcano.
+
+```{r manipulate data}
+volcanos <- volcano %>%
+    select(last_eruption_year, longitude, latitude) %>%
+    mutate(years_since_eruption = year(Sys.Date())-as.numeric(last_eruption_year))
+```
+
+
+## Plot Data
+
+```{r plot data}
+# get country polygons
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# plot
+p <- ggplot(volcanos) +
+    
+    # world polygons
+    geom_sf(data=world, fill = "black", colour = "grey10") +
+    
+    # volcano points
+    geom_point(aes(x=longitude, y=latitude, color=years_since_eruption), size=1, alpha=0.9) + 
+    
+    # color volcano points
+    scale_colour_gradient(low="red", high="yellow", na.value="white") +
+    
+    # aesthetics
+    theme(
+        panel.background = element_rect(fill = "darkslategray3"),
+        plot.background = element_rect(fill = "darkslategray3"),
+        legend.background = element_rect(fill = "darkslategray3"),
+        panel.grid.major = element_blank(),
+        plot.subtitle=element_text(size=8)
+    ) +
+    
+    # labels
+    labs(title="Years from Last Volcano Eruption", color="Years", subtitle="Points in white are unknown", x="", y="")
+    
+p
+```
+
+This was my first time using the `rnaturalearth` package. Although I thought it would be much more intimidating, the task ended up being easier than I thought. That's an extra tool in my toolkit now: graphing geographical locations on the world map.
+
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-05-12.png", p, width=8, height=4, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
