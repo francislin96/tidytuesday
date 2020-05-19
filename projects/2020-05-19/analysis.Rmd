@@ -1,0 +1,90 @@
+---
+title: "Beach Volleyball"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-05-19"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+I had just finished the book Outliers by Malcolm Gladwell. In the book, Gladwell asserts that although hard work is necessary for success, there are a lot of other factors as well. One example he provided was that professional baseball and hockey players tend to have birthdates in certain months depending on when the season started. The successful players were often just a few months older than their peers in their assigned age group, which gave them an advantage of being stronger, faster, and more mature. I was curious to see if I can detect this same effect in volleyball players.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+vb_matches <- read_csv(paste0(data_path, "vb_matches.csv"), guess_max = 76000)
+```
+
+
+## Manipulate data
+
+```{r manipulate data}
+# get all player names and birthdates
+temp <- vb_matches[c("w_player1","w_p1_birthdate")]
+vb <- rbind(temp, 
+      setNames(vb_matches[c("w_player2","w_p2_birthdate")], names(temp)),
+      setNames(vb_matches[c("l_player1","l_p1_birthdate")], names(temp)),
+      setNames(vb_matches[c("l_player2","l_p2_birthdate")], names(temp))
+      ) %>%
+    distinct() %>%
+    
+    # rename column names
+    rename(player=w_player1, birthdate=w_p1_birthdate) %>%
+    
+    # get birth month count
+    mutate(month=as.numeric(format(birthdate, "%m"))) %>%
+    group_by(month) %>%
+    summarise(n=n()) %>%
+    
+    # no NA
+    filter(!is.na(month)) %>%
+    
+    # order by month
+    mutate(month = factor(month.name[month], levels = month.name)) %>%
+    arrange(month)
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=7, fig.height=5}
+p <- ggplot(vb, aes(x=month, y=n)) +
+    geom_bar(stat="identity") + 
+    labs(title="Beach Volleyball Player Birthdates", x="Month of Birth", y="Number of Players") + 
+    theme(axis.text.x = element_text(angle = 90), plot.title = element_text(hjust = 0.5))
+p
+```
+
+Interestingly, we see two small peaks: one at around April and one at around September. However, the difference isn't drastic. As far as I know, volleyball is a sport played all year round, meaning the impact of "birthdate drift" due to seasonal scheduling may be dampened. The data is also global, so if there were seasons for volleyball, it may differ from country to country.
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-05-19.png", p, width=7, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
