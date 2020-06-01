@@ -1,0 +1,95 @@
+---
+title: "Marble Racing"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-06-02"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+Did you know marble racing was a thing? I had no idea. This week's data comes from [Jelle's Marble Runs](https://www.youtube.com/channel/UCYJdpnjuSWVOLgGT9fIzL0g) and contains track completion time for each marble. I wouldn't have guessed, but some marbles do consistently perform better than others. I took the opportunity to see if I can replicate [this visualization by Randal Olson](http://www.randalolson.com/2020/05/24/a-data-driven-look-at-marble-racing/).
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(scales)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+marbles <- read_csv(paste0(data_path, "marbles.csv"))
+```
+
+
+## Manipulate data
+
+```{r manipulate data}
+# find average race time of each race
+marbles_avg_time <- marbles %>%
+    group_by(race) %>%
+    summarize(avg_time_race = mean(time_s, na.rm=TRUE))
+
+# calculate time difference between each marble's time per race and the average race time
+marbles_diff <- marbles %>%
+    left_join(marbles_avg_time, by="race") %>%
+    filter(!is.na(time_s)) %>%
+    mutate(time_diff = 1+(time_s - avg_time_race)/avg_time_race)
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=9, fig.height=12}
+# create color palette
+colorpalette = colorRampPalette(c("#5d669e", "#8dc4a6", "#f6f3c1", "#e39065", "#9a254c"))
+
+p <- ggplot(marbles_diff, aes(x=fct_reorder(marble_name, time_diff, .fun=median, .desc=TRUE), 
+                         y=time_diff
+                         )) +
+    stat_boxplot(geom ='errorbar', width = 0.5) + 
+    geom_boxplot(fill=colorpalette(32), outlier.shape=18) +
+    scale_y_continuous(labels=scales::number_format(accuracy=0.01, suffix="x")) +
+    coord_flip() +
+    labs(x="Marble Names", 
+         y="Individual Race Times Relative to Average Race Times",
+         title="Not all marble racers are created equal") +
+    theme(panel.grid.minor=element_blank(),
+          panel.grid.major.x=element_line(colour="grey90", size=0.5),
+          panel.grid.major.y=element_blank(),
+          panel.background=element_blank(),
+          panel.border=element_rect(colour = "grey80", fill=NA, size=0.5),
+          axis.title=element_text(size=16),
+          axis.ticks=element_blank(),
+          axis.text=element_text(size=12),
+          plot.title = element_text(size=18, hjust = 0.5))
+p
+```
+
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-06-02.png", p, width=9, height=12, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
