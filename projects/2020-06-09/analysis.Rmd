@@ -1,0 +1,105 @@
+---
+title: "African American Achievements"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-06-09"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+[George Floyd's death](https://www.nytimes.com/2020/05/31/us/george-floyd-investigation.html) has sparked massive protests across the United States in support of #BlackLivesMatter. This week's data comes from [Wikipedia](https://en.wikipedia.org/wiki/List_of_African-American_firsts) and celebrates African American achievements. I wanted to take a look at if the percentage of female achievements increases over time.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(scales)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+firsts <- read_csv(paste0(data_path, "firsts.csv"))
+```
+
+
+## Manipulate data
+
+```{r manipulate data}
+# calculate median year
+median_year <- median(firsts$year)
+
+firsts_grouped <- firsts %>%
+    # factorize gender
+    mutate(gender=factor(gender, levels=c("Female African American Firsts", "African-American Firsts"))) %>%
+    
+    # create factors based on each category-year combination
+    mutate(year=ifelse(year>=median_year, paste("after", median_year), paste("before", median_year))) %>%
+    unite("category", category, year, sep="\n", remove=FALSE) %>%
+    mutate(category = factor(category, levels=c(sort(unique(.$category)[1:8]), sort(unique(.$category)[9:16])))) %>%
+    
+    # count by gender for each category
+    group_by(category, year, gender) %>%
+    summarize(count=n()) %>%
+    
+    # include calculations for pie chart
+    mutate(fraction=count/sum(count),
+           label=ifelse(grepl("Female", gender), paste0(round(fraction*100,1), "%"), ifelse(fraction==1, "0.0%", "")),
+           ymax=cumsum(fraction),
+           ymin=c(0, head(ymax, n=-1)))
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=12, fig.height=5}
+p <- ggplot(firsts_grouped, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=gender)) +
+    
+    # pie chart
+    geom_rect() +
+    coord_polar("y", start=0) +
+    xlim(c(1, 5)) +
+    
+    # facet wrap per category
+    facet_wrap(~ category, nrow = 2) +
+    
+    # labels
+    labs(title="African American Achievements", fill="", subtitle="The percentage of female African American achievements have increased in all categories except Social & Jobs and Sports.") +
+    geom_text(aes(label = label, x = 1, y = 0), size=3) +
+    
+    # aesthetics
+    theme_void() + 
+    theme(legend.position = "bottom",
+          plot.title = element_text(margin = margin(b=5), size = 20, hjust = 0.5),
+          plot.subtitle = element_text(margin = margin(b=10), size = 10, hjust = 0.5)
+          )
+p
+```
+
+From the image above, we can see that the percentage of female African American achievements have increased in all categories except Social & Jobs and Sports.
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-06-09.png", p, width=12, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
