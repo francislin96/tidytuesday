@@ -1,0 +1,159 @@
+---
+title: "Uncanny X-men"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-06-30"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+This week's data comes from the [Claremont Run Project](http://www.claremontrun.com/). It was actually pretty interesting to take a look at this dataset since I actually taught a course on superheroes before! If you're interested, you can find some of the material [here](https://francislin96.github.io/projects/USIE/usie.html). 
+
+Comic series, especially those with superpower themes, are often criticized for appealing to male fantasy and presenting unrealistic body standards. For this week's analysis, I wanted to take a look to see how often issues from the X-men comic series pass the Bechdel test. My hope is that passing the Bechdel test becomes more frequent as the issue number increases.
+
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(gridExtra)
+library(grid)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+comic_bechdel <- read_csv(paste0(data_path, "comic_bechdel.csv"))
+xmen_bechdel <- read_csv(paste0(data_path, "xmen_bechdel.csv"))
+```
+
+
+## Manipulate data
+
+```{r manipulate data, message=FALSE}
+factor_to_string <- function(fctr){
+    split <- strsplit(gsub("\\[|\\(|\\]|\\)", "", fctr), ",")[[1]]
+    return(paste0(as.character(as.numeric(split[1])+1), "-", split[2]))
+}
+
+bechdel_comic <- comic_bechdel %>%
+    
+    # select relevant columns and dropna
+    select(issue, pass_bechdel) %>%
+    drop_na(issue, pass_bechdel) %>%
+    
+    # recode
+    mutate(pass_bechdel = recode(pass_bechdel, yes = "Pass", no = "Fail")) %>%
+    
+    # factorize issue column
+    mutate(issue_factor = cut(x = issue, breaks = seq(0, 300, 10))) %>%
+    arrange(issue_factor) %>%
+    #mutate(issue_factor = sapply(issue_factor, factor_to_string)) %>%
+    
+    # for each issue factor, calculate how many pass/fail bechdel test
+    group_by(issue_factor, pass_bechdel) %>%
+    summarize(count=n()) %>%
+    ungroup() %>%
+    group_by(issue_factor) %>%
+    mutate(percent_pass = count/sum(count))
+
+
+bechdel_xmen <- xmen_bechdel %>%
+    
+    # select relevant columns and dropna
+    select(issue, pass_bechdel) %>%
+    drop_na(issue, pass_bechdel) %>%
+    
+    # recode
+    mutate(pass_bechdel = recode(pass_bechdel, yes = "Pass", no = "Fail")) %>%
+    
+    # factorize issue column
+    mutate(issue_factor = cut(x = issue, breaks = seq(0, 550, 20))) %>%
+    arrange(issue_factor) %>%
+    #mutate(issue_factor = sapply(issue_factor, factor_to_string)) %>%
+    
+    # for each issue factor, calculate how many pass/fail bechdel test
+    group_by(issue_factor, pass_bechdel) %>%
+    summarize(count=n()) %>%
+    ungroup() %>%
+    group_by(issue_factor) %>%
+    mutate(percent_pass = count/sum(count))
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=12, fig.height=8}
+p1 <- ggplot(bechdel_comic, aes(fill=pass_bechdel, y=count, x=issue_factor)) + 
+    
+    # bar chart
+    geom_bar(position="fill", stat="identity") + 
+    
+    # label
+    geom_text(aes(label = ifelse(pass_bechdel=="Pass", paste0(round(100*percent_pass),"%"),""),y=percent_pass-0.03),size = 3) +
+    
+    # relabel x axis
+    scale_x_discrete(labels=sapply(levels(bechdel_comic$issue_factor), factor_to_string)) +
+    
+    # aesthetics
+    theme_minimal() +
+    theme(
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        plot.title = element_text(vjust = -1, size=18)
+        ) +
+    labs(x="Issue", y="Percentage", fill="", title="Non-X-Men Comic Series")
+
+p2 <- ggplot(bechdel_xmen, aes(fill=pass_bechdel, y=count, x=issue_factor)) + 
+    
+    # bar chart
+    geom_bar(position="fill", stat="identity") + 
+    
+    # label
+    geom_text(aes(label = ifelse(pass_bechdel=="Pass", paste0(round(100*percent_pass),"%"),""),y=percent_pass-0.03),size = 3) +
+    
+    # relabel x axis
+    scale_x_discrete(labels=sapply(levels(bechdel_xmen$issue_factor), factor_to_string)) +
+    
+    # aesthetics
+    theme_minimal() +
+    theme(
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        plot.title = element_text(vjust = -1, size=18)
+        ) +
+    labs(x="Issue", y="Percentage", fill="", title="Uncanny X-Men Comic Series")
+
+p <- grid.arrange(p2, p1, nrow=2, top=textGrob("Comic Series Bechdel Test Results", gp=gpar(fontsize=24)))
+```
+
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-06-30.png", p, width=12, height=8, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
