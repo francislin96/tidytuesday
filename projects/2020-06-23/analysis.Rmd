@@ -1,0 +1,86 @@
+---
+title: "Caribou Location Tracking"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-06-23"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+This week's data focuses on caribou location tracking. The data contains longitude and latitude coordinates of 260 caribou in northern British Columbia from 1988 to 2016. I didn't have too much time this week, so I created a visualization similar to the one I made for [San Francisco Trees](https://github.com/francislin96/tidytuesday/tree/master/projects/2020-01-28).
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(ggmap)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+locations <- read_csv(paste0(data_path, "locations.csv"))
+```
+
+
+## Create Map
+
+```{r create map, message=FALSE}
+# read in google maps API key
+register_google(key=read_key("google"))
+
+# create ggmap
+caribou_map <- get_map(location = c(mean(caribou_locations$longitude), mean(caribou_locations$latitude)), zoom=7)
+caribou_ggmap <- ggmap(caribou_map)
+```
+
+
+## Manipulate data
+
+```{r manipulate data}
+caribou_locations <- locations %>%
+    
+    # drop NA
+    drop_na(longitude, latitude) %>%
+    
+    # filter for points within boundaries of map
+    filter(between(longitude, min(caribou_ggmap$data$lon), max(caribou_ggmap$data$lon)), between(latitude, min(caribou_ggmap$data$lat), max(caribou_ggmap$data$lat)))
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=7, fig.height=5}
+p <- caribou_ggmap +
+    stat_density2d(data=caribou_locations, aes(x=longitude, y=latitude, fill=season), bins=5, alpha=0.5, geom="polygon") +
+    labs(x="", y="", title="Location Density of Caribou in Northern British Columbia 1988-2016", fill="Season") +
+    theme(plot.title=element_text(hjust = 0.5))
+p
+```
+
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-06-23.png", p, width=7, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
