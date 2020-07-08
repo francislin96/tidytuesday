@@ -125,7 +125,7 @@ p_countries <- ggplot(plot.ratings, aes(x=attribute, y=score, group=country_of_o
   geom_text(aes(y=13, label=label), size=6) +
   expand_limits(y=c(0,10)) +
   coord_radar() + 
-  labs(x="", y="", title="Coffee Profile of Different Countries", subtitle="Each ring represents one country. Coffee profiles are quite similar across countries.") +
+  labs(x="", y="", title="Coffee Profile of Different Countries", subtitle="Each ring represents one country.\nCoffee profiles are quite similar across countries.") +
   theme(axis.text.x=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank(), plot.title = element_text(hjust = 0.5, size=24), plot.subtitle=element_text(size=16)) +
   scale_x_discrete(labels=sapply(levels(plot.ratings$attribute), simpleCap))
 
@@ -152,29 +152,13 @@ p <- grid.arrange(p_countries,
 
 ![](README_files/figure-gfm/plot%20data-1.png)<!-- -->
 
-``` r
-p
-```
-
-    ## TableGrob (2 x 12) "arrange": 9 grobs
-    ##   z         cells    name           grob
-    ## 1 1 ( 1- 2, 1- 4) arrange gtable[layout]
-    ## 2 2 ( 1- 1, 5- 6) arrange gtable[layout]
-    ## 3 3 ( 1- 1, 7- 8) arrange gtable[layout]
-    ## 4 4 ( 1- 1, 9-10) arrange gtable[layout]
-    ## 5 5 ( 1- 1,11-12) arrange gtable[layout]
-    ## 6 6 ( 2- 2, 5- 6) arrange gtable[layout]
-    ## 7 7 ( 2- 2, 7- 8) arrange gtable[layout]
-    ## 8 8 ( 2- 2, 9-10) arrange gtable[layout]
-    ## 9 9 ( 2- 2,11-12) arrange gtable[layout]
-
 Ethiopia, Kenya, and Uganda often receive the best scores for the
 different attributes of coffee.
 
 ## Save Image
 
 ``` r
-ggsave("plot/plot_2020-07-07.png", p, width=7, height=5, units="in")
+ggsave("plot/plot_2020-07-07.png", p, width=24, height=10, units="in")
 ```
 
 ## Session Info
