@@ -1,0 +1,89 @@
+---
+title: "Australian Pets"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-07-14"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+It's sad seeing so many cats and dogs being euthanized in this dataset. Cats have a higher euthanization rate compared to dogs, although that gap is narrowing as both cats and dogs euthanization rates have lowered in recent years. According to [American Humane](https://americanhumane.org/fact-sheet/animal-shelter-euthanasia-2/), cats are euthanized more frequently since they are less likely to have owner identification when entering a shelter.
+
+# R Program
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+library(magick)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+animal_outcomes <- read_csv(paste0(data_path, "animal_outcomes.csv"))
+```
+
+
+## Manipulate data
+
+```{r manipulate data}
+outcomes <- animal_outcomes %>% 
+    select(year, animal_type, outcome, Total) %>%
+    filter(animal_type %in% c("Cats", "Dogs")) %>%
+    mutate(outcome_type = factor(case_when(outcome %in% c("Reclaimed", "Rehomed") ~ "Positive",
+                     outcome == "Euthanized" ~ "Negative",
+                     TRUE ~ "Other"), levels=c("Positive", "Negative", "Other"))) %>%
+    group_by(year, animal_type, outcome_type) %>%
+    summarize(total = sum(Total)) %>%
+    group_by(year, animal_type) %>%
+    mutate(percentage = total/sum(total)*100) %>%
+    filter(outcome_type=="Negative")
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=7, fig.height=5}
+# used for plotting images
+imagexcoord <- 2000
+dogycoord <- (outcomes %>% filter(year==imagexcoord, animal_type=="Dogs"))%>% `[[`("percentage")
+catycoord <- (outcomes %>% filter(year==imagexcoord, animal_type=="Cats"))%>% `[[`("percentage")
+
+# plot
+p <- ggplot(outcomes) +
+    geom_line(aes(x=year, y=percentage, color=animal_type)) +
+    ylim(0,100) +
+    labs(x="Year", y="Percentage Euthanized", color="Animal", title="Euthanization Rates of Cats and Dogs in Australia", subtitle="Cats have consistently been euthanized at a higher rate than dogs, although both are trending lower") + 
+    theme(plot.subtitle=element_text(size=8), legend.position = "none") +
+    
+    # add images of dog and cat
+    annotation_raster(image_read("https://cdn.pixabay.com/photo/2016/02/07/19/47/dog-1185460_960_720.png"), imagexcoord-1, imagexcoord+1, dogycoord, dogycoord+10) +
+    annotation_raster(image_read("https://freesvg.org/img/molumen-cat-icons-4.png"), imagexcoord-0.9, imagexcoord+0.9, catycoord-1, catycoord+13)
+p
+```
+
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-07-14.png", p, width=7, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
