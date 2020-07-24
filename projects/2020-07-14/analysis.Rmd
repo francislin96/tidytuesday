@@ -1,0 +1,74 @@
+---
+title: "Astronaut database"
+author: "Francis Lin | #TidyTuesday |"
+date: "2020-07-14"
+output: rmarkdown::github_document
+---
+
+# Introduction
+
+# R Program
+
+This week's data was collected [from NASA](https://data.mendeley.com/datasets/86tsnnbv2w/1). Since mission duration time was in the dataset, I wanted to take a look to see if the mission duration increased as time went on.
+
+## Set up
+
+```{r setup, message=FALSE}
+# source utilities
+source("../utilities.R")
+
+# packages
+library(tidyverse)
+
+# set data path
+data_path <- set_data_path()
+
+# create plot folder if doesn't exist
+if (!dir.exists("./plot")) {dir.create("./plot")}
+```
+
+
+## Load Data
+
+```{r load data, message=FALSE}
+astronauts <- read_csv(paste0(data_path, "astronauts.csv"))
+```
+
+
+## Manipulate data
+
+```{r manipulate data}
+astronauts_missiontimes <- astronauts %>%
+    select(year_of_mission, hours_mission, sex) %>%
+    mutate(days_mission=hours_mission/24) %>%
+    drop_na()
+
+astronauts_missiontimes_avg <- astronauts_missiontimes %>%
+    group_by(year_of_mission) %>%
+    summarize(avg=mean(days_mission))
+```
+
+
+## Plot Data
+
+```{r plot data, fig.width=7, fig.height=5}
+p <- ggplot() +
+    geom_point(data=astronauts_missiontimes, aes(x=year_of_mission, y=days_mission, color=sex), alpha=0.3) +
+    geom_line(data=astronauts_missiontimes_avg, aes(x=year_of_mission, y=avg), alpha=0.7, color="red") + 
+    labs(x="Year", y="Days", title="Astronaut Duration of Missions", subtitle="Average mission duration is shown in red")
+p
+```
+
+
+## Save Image
+
+```{r save image}
+ggsave("plot/plot_2020-07-14.png", p, width=7, height=5, units="in")
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
